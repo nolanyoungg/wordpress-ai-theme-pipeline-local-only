@@ -7,10 +7,14 @@ This repository is used to build, review, and publish WordPress theme work throu
 ## Repository layout
 
 - WordPress themes belong in `wp-content/themes/`.
-- The first generated theme should be created at:
+- Each build should create a new numbered theme directory such as:
   `wp-content/themes/nolan-showcase-theme/`
+  `wp-content/themes/nolan-showcase-theme-x2/`
+  `wp-content/themes/nolan-showcase-theme-x3/`
+- Treat `nolan-showcase-theme` as the base build and increment the suffix for later runs.
 - A static GitHub Pages preview should be created at:
   `preview/`
+- Each theme build should also create a zip archive beside the theme directory.
 - Do not modify WordPress core files.
 - Do not commit uploads, cache files, backups, or environment files.
 - Local Codex prompts live in `.github/codex/prompts/`.
@@ -32,7 +36,7 @@ This repository is used to build, review, and publish WordPress theme work throu
 ## GitHub Pages preview rules
 
 - GitHub Pages cannot execute WordPress PHP templates.
-- Build the full WordPress theme in `wp-content/themes/nolan-showcase-theme/`.
+- Build the full WordPress theme in a numbered folder under `wp-content/themes/`.
 - Also build a static visual preview in `preview/` so GitHub Pages can show a sneak peek of the theme.
 - The preview should mirror the homepage design and interactions as closely as possible using static HTML, CSS, and vanilla JavaScript.
 - The preview must not require build tools, remote CDNs, API keys, SSH, SFTP, or external services.
@@ -44,6 +48,7 @@ This repository is used to build, review, and publish WordPress theme work throu
 - Do not assume or require an OpenAI API key.
 - GitHub Actions are for validation and Pages deployment only.
 - Keep AI-generated artifacts in `.ai/` until you are ready to commit them.
+- The local workflow script should push the feature branch after a successful build so GitHub Pages can update from the preview.
 
 ## AI workflow rules
 
@@ -75,6 +80,7 @@ A task is done only when:
 - The requested files are created or updated.
 - The theme has a valid WordPress theme header.
 - A static GitHub Pages preview exists at `preview/index.html`.
+- A theme zip archive exists beside the numbered theme folder.
 - PHP files pass syntax checks.
 - Obvious broken links, missing assets, and invalid paths are avoided.
 - The PR summary explains what changed.

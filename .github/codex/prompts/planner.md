@@ -7,7 +7,9 @@ User request:
 
 Repository instructions:
 - Read AGENTS.md.
-- The target theme directory is wp-content/themes/nolan-showcase-theme/.
+- The target theme directory is {{THEME_DIR}}.
+- The theme should also be zipped to {{THEME_ZIP}}.
+- The display name for this build is {{THEME_DISPLAY_NAME}}.
 - Also create a static GitHub Pages preview in preview/.
 - The result should be suitable for a WordPress theme pull request.
 - Do not edit unrelated files.
@@ -25,5 +27,6 @@ The Builder Agent prompt must include:
 7. Security requirements
 8. Static GitHub Pages preview requirements
 9. Verification commands
-10. Definition of done
-11. Explicit instruction to summarize every changed file
+10. Zip archive requirement
+11. Definition of done
+12. Explicit instruction to summarize every changed file

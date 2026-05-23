@@ -4,14 +4,12 @@ on:
   pull_request:
     paths:
       - "preview/**"
-      - "wp-content/themes/nolan-showcase-theme/**"
+      - "wp-content/themes/**"
       - ".github/workflows/theme-checks.yml"
   push:
-    branches:
-      - main
     paths:
       - "preview/**"
-      - "wp-content/themes/nolan-showcase-theme/**"
+      - "wp-content/themes/**"
       - ".github/workflows/theme-checks.yml"
 
 permissions:
@@ -36,8 +34,32 @@ jobs:
         run: |
           set -e
 
-          THEME_DIR="wp-content/themes/nolan-showcase-theme"
+          THEME_DIR=""
+          THEME_VERSION=0
+
+          for CANDIDATE in wp-content/themes/nolan-showcase-theme wp-content/themes/nolan-showcase-theme-x*; do
+            [ -d "$CANDIDATE" ] || continue
+
+            NAME="$(basename "$CANDIDATE")"
+            if [ "$NAME" = "nolan-showcase-theme" ]; then
+              VERSION=1
+            else
+              VERSION="${NAME##*-x}"
+            fi
+
+            if [ "$VERSION" -gt "$THEME_VERSION" ]; then
+              THEME_DIR="$CANDIDATE"
+              THEME_VERSION="$VERSION"
+            fi
+          done
+
+          if [ -z "$THEME_DIR" ]; then
+            echo "::error::No numbered Nolan Showcase theme folder found."
+            exit 1
+          fi
+
           PREVIEW_DIR="preview"
+          THEME_ZIP="${THEME_DIR}.zip"
 
           REQUIRED_THEME_FILES=(
             "$THEME_DIR/style.css"
@@ -65,6 +87,8 @@ jobs:
             [ -f "$REQUIRED_FILE" ] || { echo "::error::Missing required theme file: $REQUIRED_FILE"; exit 1; }
           done
 
+          [ -f "$THEME_ZIP" ] || { echo "::error::Missing theme zip archive: $THEME_ZIP"; exit 1; }
+
           for REQUIRED_FILE in "${REQUIRED_PREVIEW_FILES[@]}"; do
             [ -f "$REQUIRED_FILE" ] || { echo "::error::Missing required preview file: $REQUIRED_FILE"; exit 1; }
           done
@@ -72,10 +96,48 @@ jobs:
       - name: Check theme header
         shell: bash
         run: |
-          grep -q "Theme Name:" wp-content/themes/nolan-showcase-theme/style.css
+          THEME_DIR=""
+          THEME_VERSION=0
+
+          for CANDIDATE in wp-content/themes/nolan-showcase-theme wp-content/themes/nolan-showcase-theme-x*; do
+            [ -f "$CANDIDATE/style.css" ] || continue
+
+            NAME="$(basename "$CANDIDATE")"
+            if [ "$NAME" = "nolan-showcase-theme" ]; then
+              VERSION=1
+            else
+              VERSION="${NAME##*-x}"
+            fi
+
+            if [ "$VERSION" -gt "$THEME_VERSION" ]; then
+              THEME_DIR="$CANDIDATE"
+              THEME_VERSION="$VERSION"
+            fi
+          done
+
+          grep -q "Theme Name:" "$THEME_DIR/style.css"
 
       - name: Lint PHP files
         shell: bash
         run: |
-          find wp-content/themes/nolan-showcase-theme -name "*.php" -type f -print0 \
+          THEME_DIR=""
+          THEME_VERSION=0
+
+          for CANDIDATE in wp-content/themes/nolan-showcase-theme wp-content/themes/nolan-showcase-theme-x*; do
+            [ -d "$CANDIDATE" ] || continue
+
+            NAME="$(basename "$CANDIDATE")"
+            if [ "$NAME" = "nolan-showcase-theme" ]; then
+              VERSION=1
+            else
+              VERSION="${NAME##*-x}"
+            fi
+
+            if [ "$VERSION" -gt "$THEME_VERSION" ]; then
+              THEME_DIR="$CANDIDATE"
+              THEME_VERSION="$VERSION"
+            fi
+          done
+
+          find "$THEME_DIR" -name "*.php" -type f -print0 \
             | xargs -0 -n 1 php -l
