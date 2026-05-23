@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Event coverage placeholder">
+  <rect width="1200" height="800" fill="#0a0907"/>
+  <circle cx="260" cy="380" r="140" fill="rgba(182,111,79,0.14)"/>
+  <circle cx="540" cy="320" r="180" fill="rgba(200,169,106,0.12)"/>
+  <circle cx="860" cy="420" r="150" fill="rgba(103,98,79,0.12)"/>
+  <path d="M180 620c160-160 340-230 540-210 170 18 320 110 450 280" fill="none" stroke="rgba(247,241,231,0.18)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M260 610c120-80 250-120 390-120 220 0 400 98 540 294" fill="none" stroke="rgba(200,169,106,0.30)" stroke-width="8" stroke-linecap="round"/>
+</svg>
+

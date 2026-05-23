@@ -1,0 +1,28 @@
+.faq-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+}
+
+@include mq("sm") {
+	.faq-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.faq-item {
+	border-radius: var(--radius);
+	border: 1px solid rgba(247, 241, 231, 0.12);
+	background: rgba(17, 16, 13, 0.52);
+	padding: 14px;
+}
+
+.faq-item summary {
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.faq-body {
+	margin-top: 10px;
+}
+

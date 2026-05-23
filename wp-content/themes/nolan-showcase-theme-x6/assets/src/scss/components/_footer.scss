@@ -1,0 +1,72 @@
+.site-footer {
+	padding: 70px 0 40px;
+	border-top: 1px solid rgba(247, 241, 231, 0.08);
+	background: radial-gradient(900px 360px at 10% 0%, rgba(185, 149, 88, 0.1), transparent 60%),
+		linear-gradient(180deg, rgba(17, 16, 13, 0.42), rgba(8, 8, 6, 0.14));
+}
+
+.footer-grid {
+	display: grid;
+	grid-template-columns: 1.2fr 1fr 0.8fr;
+	gap: 22px;
+	align-items: start;
+}
+
+@include mq("md") {
+	.footer-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.footer-brand__link {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	text-decoration: none;
+}
+
+.footer-brand__mark img {
+	width: 44px;
+	height: 44px;
+}
+
+.footer-brand__text strong {
+	display: block;
+}
+
+.footer-brand__text em {
+	display: block;
+	color: rgba(243, 234, 220, 0.7);
+	font-style: normal;
+	font-size: 12px;
+}
+
+.footer-note {
+	margin-top: 14px;
+}
+
+.footer-menu {
+	list-style: none;
+	display: grid;
+	gap: 10px;
+	margin: 12px 0 0 0;
+	padding: 0;
+}
+
+.footer-menu a {
+	color: rgba(243, 234, 220, 0.92);
+	text-decoration: none;
+}
+
+.footer-bottom {
+	margin-top: 30px;
+	padding-top: 18px;
+	border-top: 1px solid rgba(247, 241, 231, 0.08);
+}
+
+.footer-legal {
+	margin: 0;
+	font-size: 12px;
+	color: rgba(243, 234, 220, 0.7);
+}
+

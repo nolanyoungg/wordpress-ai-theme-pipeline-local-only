@@ -1,0 +1,73 @@
+$color-bg: #080806;
+$color-bg2: #0d0c0a;
+$color-panel: rgba(17, 16, 13, 0.72);
+$color-panel2: rgba(13, 12, 10, 0.56);
+$color-line: rgba(247, 241, 231, 0.14);
+$color-text: #f7f1e7;
+$color-muted: rgba(243, 234, 220, 0.74);
+$color-ivory: #f6efe6;
+$color-gold: #c8a96a;
+$color-gold2: #b99558;
+$color-clay: #b66f4f;
+$color-taupe: #8f7a61;
+$color-olive: #67624f;
+
+$radius: 18px;
+$radius2: 26px;
+$shadow: 0 26px 80px rgba(0, 0, 0, 0.58);
+$shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.44);
+
+$max: 1180px;
+$max-narrow: 920px;
+
+$sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+$mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+$ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+$t-fast: 180ms;
+$t-med: 260ms;
+$t-slow: 420ms;
+
+$z-header: 950;
+$z-overlay: 980;
+$z-skip: 1000;
+
+:root {
+	--bg: #{$color-bg};
+	--bg2: #{$color-bg2};
+	--panel: #{$color-panel};
+	--panel2: #{$color-panel2};
+	--line: #{$color-line};
+	--text: #{$color-text};
+	--muted: #{$color-muted};
+	--ivory: #{$color-ivory};
+	--gold: #{$color-gold};
+	--gold2: #{$color-gold2};
+	--clay: #{$color-clay};
+	--taupe: #{$color-taupe};
+	--olive: #{$color-olive};
+	--radius: #{$radius};
+	--radius2: #{$radius2};
+	--shadow: #{$shadow};
+	--shadow-soft: #{$shadow-soft};
+	--max: #{$max};
+	--max-narrow: #{$max-narrow};
+	--sans: #{$sans};
+	--mono: #{$mono};
+	--ease: #{$ease};
+	--t-fast: #{$t-fast};
+	--t-med: #{$t-med};
+	--t-slow: #{$t-slow};
+	--z-header: #{$z-header};
+	--z-overlay: #{$z-overlay};
+	--z-skip: #{$z-skip};
+	--space-1: 6px;
+	--space-2: 10px;
+	--space-3: 14px;
+	--space-4: 18px;
+	--space-5: 26px;
+	--space-6: 38px;
+	--space-7: 56px;
+	--space-8: 82px;
+}
+

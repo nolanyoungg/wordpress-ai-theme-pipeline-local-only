@@ -1,0 +1,68 @@
+body {
+	background: radial-gradient(1100px 620px at 15% -10%, rgba(185, 149, 88, 0.18), transparent 60%),
+		radial-gradient(900px 540px at 85% 10%, rgba(182, 111, 79, 0.13), transparent 60%),
+		radial-gradient(900px 540px at 50% 80%, rgba(103, 98, 79, 0.12), transparent 62%),
+		linear-gradient(180deg, var(--bg), #070706 40%, var(--bg));
+}
+
+.site-main {
+	min-height: 70vh;
+}
+
+.section {
+	@include section-pad;
+}
+
+.section--tight {
+	@include section-pad(var(--space-7));
+}
+
+.section--ink {
+	background: radial-gradient(900px 360px at 10% 0%, rgba(185, 149, 88, 0.1), transparent 60%),
+		linear-gradient(180deg, rgba(17, 16, 13, 0.42), rgba(8, 8, 6, 0.08));
+	border-top: 1px solid rgba(247, 241, 231, 0.06);
+	border-bottom: 1px solid rgba(247, 241, 231, 0.06);
+}
+
+.page-head {
+	max-width: 78ch;
+	margin-bottom: 26px;
+}
+
+.page-title {
+	margin: 0 0 10px 0;
+}
+
+.page-lede {
+	margin: 0;
+	max-width: 78ch;
+}
+
+.section-head {
+	max-width: 78ch;
+	margin-bottom: 28px;
+}
+
+.section-lede {
+	margin: 0;
+	max-width: 78ch;
+}
+
+.dot {
+	opacity: 0.6;
+	padding: 0 8px;
+}
+
+.empty-state,
+.not-found {
+	border-radius: var(--radius2);
+	padding: 28px;
+	background: linear-gradient(180deg, rgba(18, 17, 14, 0.72), rgba(13, 12, 10, 0.46));
+	border: 1px solid rgba(247, 241, 231, 0.12);
+	box-shadow: var(--shadow-soft);
+}
+
+.pagination {
+	margin-top: 24px;
+}
+

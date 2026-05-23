@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Commercial campaign placeholder">
+  <rect width="1200" height="800" fill="#0b0a08"/>
+  <path d="M190 250h820" stroke="rgba(200,169,106,0.34)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M190 330h560" stroke="rgba(247,241,231,0.20)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M190 410h700" stroke="rgba(182,111,79,0.20)" stroke-width="12" stroke-linecap="round"/>
+  <rect x="190" y="500" width="820" height="170" rx="34" fill="rgba(17,16,13,0.72)" stroke="rgba(247,241,231,0.12)" stroke-width="2"/>
+  <circle cx="340" cy="585" r="70" fill="rgba(200,169,106,0.12)"/>
+  <circle cx="520" cy="585" r="70" fill="rgba(182,111,79,0.12)"/>
+  <circle cx="700" cy="585" r="70" fill="rgba(103,98,79,0.12)"/>
+</svg>
+

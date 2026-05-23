@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Couple session placeholder">
+  <rect width="1200" height="800" fill="#0a0907"/>
+  <circle cx="500" cy="380" r="170" fill="rgba(200,169,106,0.12)"/>
+  <circle cx="720" cy="420" r="170" fill="rgba(182,111,79,0.12)"/>
+  <path d="M240 600c180-180 360-260 540-240 168 18 320 118 460 302" fill="none" stroke="rgba(247,241,231,0.18)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M360 610c120-90 250-130 390-120 210 16 380 124 510 326" fill="none" stroke="rgba(200,169,106,0.30)" stroke-width="8" stroke-linecap="round"/>
+</svg>
+

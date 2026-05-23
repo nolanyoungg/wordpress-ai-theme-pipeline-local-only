@@ -1,0 +1,27 @@
+.contact-grid {
+	display: grid;
+	grid-template-columns: 1.1fr 0.9fr;
+	gap: 22px;
+	align-items: start;
+}
+
+@include mq("md") {
+	.contact-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.contact-side img {
+	border-radius: var(--radius2);
+	border: 1px solid rgba(247, 241, 231, 0.12);
+	box-shadow: var(--shadow-soft);
+}
+
+.contact-side__note {
+	margin-top: 14px;
+	border-radius: var(--radius2);
+	padding: 16px;
+	border: 1px solid rgba(247, 241, 231, 0.12);
+	background: rgba(17, 16, 13, 0.52);
+}
+

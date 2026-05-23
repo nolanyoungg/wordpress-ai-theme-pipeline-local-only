@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Black and white portrait placeholder">
+  <rect width="1200" height="800" fill="#050505"/>
+  <rect x="220" y="120" width="760" height="560" rx="46" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.10)" stroke-width="2"/>
+  <path d="M450 560c20-140 70-240 150-300 86-64 184-62 270 6 70 56 112 148 126 276" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="610" cy="330" r="130" fill="rgba(255,255,255,0.05)"/>
+  <path d="M540 410c30-30 70-46 120-46 60 0 108 28 144 82" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="8" stroke-linecap="round"/>
+</svg>
+

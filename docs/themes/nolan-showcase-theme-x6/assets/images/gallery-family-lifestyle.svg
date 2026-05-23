@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Family lifestyle placeholder">
+  <rect width="1200" height="800" fill="#090806"/>
+  <path d="M180 580c120-180 280-280 480-300 240-24 420 96 560 360" fill="none" stroke="rgba(200,169,106,0.30)" stroke-width="14" stroke-linecap="round"/>
+  <path d="M260 620c90-110 210-170 360-180 210-14 380 80 510 282" fill="none" stroke="rgba(247,241,231,0.18)" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="420" cy="360" r="140" fill="rgba(103,98,79,0.14)"/>
+  <circle cx="760" cy="360" r="190" fill="rgba(182,111,79,0.12)"/>
+</svg>
+

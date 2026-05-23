@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Editorial portrait placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d0c0a"/>
+      <stop offset="1" stop-color="#080806"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="30%" cy="20%" r="60%">
+      <stop offset="0" stop-color="rgba(200,169,106,0.35)"/>
+      <stop offset="1" stop-color="rgba(200,169,106,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect width="1200" height="800" fill="url(#glow)"/>
+  <path d="M210 590c74-168 155-290 280-330 104-33 207 4 280 76 66 64 103 146 140 244" fill="none" stroke="rgba(247,241,231,0.22)" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="735" cy="320" r="130" fill="rgba(182,111,79,0.18)" stroke="rgba(247,241,231,0.12)" stroke-width="2"/>
+  <circle cx="520" cy="420" r="210" fill="rgba(200,169,106,0.12)"/>
+  <path d="M520 260c-40 58-62 120-62 186 0 120 72 200 184 200 112 0 190-80 190-192 0-66-24-128-70-180" fill="rgba(17,16,13,0.62)" stroke="rgba(200,169,106,0.34)" stroke-width="3"/>
+  <path d="M510 460c38 20 82 30 132 30" fill="none" stroke="rgba(247,241,231,0.18)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M480 380c24-20 54-32 88-32 52 0 96 28 120 72" fill="none" stroke="rgba(200,169,106,0.38)" stroke-width="8" stroke-linecap="round"/>
+  <text x="70" y="740" fill="rgba(243,234,220,0.58)" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="22" letter-spacing="4">MNY PHOTO — EDITORIAL SET</text>
+</svg>
+

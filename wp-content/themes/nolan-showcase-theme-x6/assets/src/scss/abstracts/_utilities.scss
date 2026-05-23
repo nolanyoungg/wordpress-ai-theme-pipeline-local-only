@@ -1,0 +1,113 @@
+.container {
+	@include container;
+}
+
+.container-narrow {
+	@include container-narrow;
+}
+
+.kicker {
+	margin: 0 0 12px 0;
+	font-family: var(--mono);
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	font-size: 12px;
+	color: rgba(243, 234, 220, 0.86);
+}
+
+.cluster {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
+}
+
+.center-text {
+	text-align: center;
+}
+
+.center-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 22px;
+}
+
+.text-link {
+	display: inline-flex;
+	gap: 10px;
+	align-items: center;
+	font-family: var(--mono);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	font-size: 12px;
+	color: rgba(247, 241, 231, 0.92);
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
+.microcopy {
+	margin: 12px 0 0 0;
+	font-size: 14px;
+}
+
+.frame {
+	border-radius: var(--radius2);
+	padding: 14px;
+	background: radial-gradient(400px 260px at 15% 15%, rgba(200, 169, 106, 0.14), transparent 60%),
+		linear-gradient(180deg, rgba(36, 33, 28, 0.62), rgba(13, 12, 10, 0.46));
+	border: 1px solid rgba(247, 241, 231, 0.1);
+	box-shadow: var(--shadow);
+	position: relative;
+	overflow: hidden;
+}
+
+.frame::before {
+	content: "";
+	position: absolute;
+	inset: 8px;
+	border-radius: calc(var(--radius2) - 8px);
+	border: 1px solid rgba(247, 241, 231, 0.08);
+	pointer-events: none;
+}
+
+.frame img {
+	border-radius: calc(var(--radius2) - 10px);
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.reveal {
+	opacity: 1;
+	transform: none;
+}
+
+html.js-enabled .reveal {
+	opacity: 0;
+	transform: translateY(12px);
+	transition: opacity var(--t-slow) var(--ease), transform var(--t-slow) var(--ease);
+}
+
+html.js-enabled .reveal.is-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto !important;
+	}
+	html.js-enabled .reveal {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+	* {
+		transition-duration: 0.001ms !important;
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+	}
+}
+

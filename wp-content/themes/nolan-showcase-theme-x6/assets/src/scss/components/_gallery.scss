@@ -1,0 +1,72 @@
+.filter-bar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-bottom: 18px;
+}
+
+.filter-pill {
+	border-radius: 999px;
+	padding: 10px 14px;
+	border: 1px solid rgba(247, 241, 231, 0.16);
+	background: rgba(17, 16, 13, 0.52);
+	color: rgba(243, 234, 220, 0.92);
+	font-family: var(--mono);
+	font-size: 11px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.filter-pill.is-active {
+	border-color: rgba(200, 169, 106, 0.42);
+	background: rgba(200, 169, 106, 0.12);
+}
+
+.portfolio-grid {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	gap: 18px;
+}
+
+.portfolio-card {
+	grid-column: span 4;
+	border-radius: var(--radius2);
+	padding: 14px;
+	background: linear-gradient(180deg, rgba(18, 17, 14, 0.72), rgba(13, 12, 10, 0.46));
+	border: 1px solid rgba(247, 241, 231, 0.12);
+	box-shadow: var(--shadow-soft);
+}
+
+.portfolio-card.is-hidden {
+	display: none;
+}
+
+.portfolio-card--wide {
+	grid-column: span 6;
+}
+
+.portfolio-card--tall {
+	grid-column: span 3;
+}
+
+.portfolio-body {
+	padding-top: 12px;
+}
+
+@include mq("lg") {
+	.portfolio-card,
+	.portfolio-card--wide,
+	.portfolio-card--tall {
+		grid-column: span 6;
+	}
+}
+
+@include mq("sm") {
+	.portfolio-card,
+	.portfolio-card--wide,
+	.portfolio-card--tall {
+		grid-column: span 12;
+	}
+}
+
