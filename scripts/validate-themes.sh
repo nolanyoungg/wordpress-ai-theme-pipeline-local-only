@@ -143,6 +143,12 @@ zip_dir="$ROOT_DIR/zippedTheme"
 mkdir -p "$zip_dir"
 rm -f "$zip_dir"/*.zip
 
+zip_has_member() {
+  local zip_path="$1"
+  local member="$2"
+  unzip -Z1 "$zip_path" | awk -v target="$member" '$0 == target { found = 1 } END { exit(found ? 0 : 1) }'
+}
+
 echo "Packaging zips into $zip_dir/"
 (
   cd "$THEMES_DIR"
@@ -153,10 +159,10 @@ echo "Packaging zips into $zip_dir/"
 
 for theme_slug in "${themes[@]}"; do
   zip_path="$zip_dir/$theme_slug.zip"
-  unzip -l "$zip_path" | grep -q "${theme_slug}/style.css" || { echo "Zip missing style.css: $zip_path" >&2; exit 1; }
-  unzip -l "$zip_path" | grep -q "${theme_slug}/functions.php" || { echo "Zip missing functions.php: $zip_path" >&2; exit 1; }
-  unzip -l "$zip_path" | grep -q "${theme_slug}/assets/css/theme.css" || { echo "Zip missing theme.css: $zip_path" >&2; exit 1; }
-  unzip -l "$zip_path" | grep -q "${theme_slug}/assets/js/theme.js" || { echo "Zip missing theme.js: $zip_path" >&2; exit 1; }
+  zip_has_member "$zip_path" "${theme_slug}/style.css" || { echo "Zip missing style.css: $zip_path" >&2; exit 1; }
+  zip_has_member "$zip_path" "${theme_slug}/functions.php" || { echo "Zip missing functions.php: $zip_path" >&2; exit 1; }
+  zip_has_member "$zip_path" "${theme_slug}/assets/css/theme.css" || { echo "Zip missing theme.css: $zip_path" >&2; exit 1; }
+  zip_has_member "$zip_path" "${theme_slug}/assets/js/theme.js" || { echo "Zip missing theme.js: $zip_path" >&2; exit 1; }
 done
 
 echo "OK"
