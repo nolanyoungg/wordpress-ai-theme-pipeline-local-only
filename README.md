@@ -64,6 +64,8 @@ npm install
 npm run build:react-bundles
 ```
 
+Note: this uses free, public npm packages at build time. No paid APIs or keys are required.
+
 CI will fail if bundling produces changes that aren’t committed.
 
 ## GitHub Actions: validation + ZIP artifacts
@@ -143,7 +145,7 @@ Also create a matching static GitHub Pages preview under docs/themes/nolan-showc
 
 Hard constraints:
 - No OpenAI API usage, no OPENAI_API_KEY, no openai/codex-action.
-- No external services.
+- No paid external services or API keys (free npm build dependencies are OK).
 - No CDN dependencies required for the WordPress theme (all assets local).
 
 Theme requirements:
