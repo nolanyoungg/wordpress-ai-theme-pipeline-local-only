@@ -1,0 +1,13 @@
+/*
+Theme Name: Nolan Showcase Theme X8
+Description: A classic, accessible, typography-forward showcase/portfolio theme with a hero, project cards, and a clean content layout.
+Version: 1.0.0
+Text Domain: nolan-showcase-theme-x8
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Tags: custom-menu, featured-images, blog, portfolio, one-column, responsive-layout
+*/
+
+/* Keep root styles minimal; theme styling lives in assets/css/theme.css. */
+:root { color-scheme: light; }
+
