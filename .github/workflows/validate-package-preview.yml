@@ -29,6 +29,41 @@ jobs:
         with:
           php-version: "8.2"
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Node dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Build React bundles (optional per-theme)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f package.json ]; then
+            npm run build:react-bundles
+          fi
+
+      - name: Fail if build outputs are uncommitted
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! git diff --quiet; then
+            echo "::error::Build produced changes that are not committed."
+            echo "::error::Run: npm run build:react-bundles and commit the generated outputs."
+            git --no-pager diff --name-only
+            exit 1
+          fi
+
       - name: Detect themes
         id: detect
         shell: bash

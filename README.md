@@ -23,6 +23,7 @@ Codex is used **manually/local** (via a normal ChatGPT Pro subscription) to gene
 - Local helpers:
   - `scripts/list-theme-versions.sh`
   - `scripts/validate-themes.sh`
+  - React bundling (optional): `npm run build:react-bundles`
 
 ## Theme versioning
 
@@ -48,6 +49,22 @@ bash scripts/validate-themes.sh
 ```
 
 4. Commit changes and open a PR. Review before merging.
+
+## Optional: React components (build step)
+
+This repo supports optional React bundling using `esbuild` (no CDN runtime required). To opt into React for a theme or preview, create an entry file:
+
+- Theme bundle: `wp-content/themes/<theme-slug>/assets/js/theme.entry.jsx` (outputs `assets/js/theme.js`)
+- Preview bundle: `docs/themes/<theme-slug>/assets/js/preview.entry.jsx` (outputs `assets/js/preview.js`)
+
+Then run:
+
+```bash
+npm install
+npm run build:react-bundles
+```
+
+CI will fail if bundling produces changes that aren’t committed.
 
 ## GitHub Actions: validation + ZIP artifacts
 

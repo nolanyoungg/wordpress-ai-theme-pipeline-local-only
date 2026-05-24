@@ -5,6 +5,14 @@ dist/
 wp-content/themes/*.zip
 !zippedTheme/.gitkeep
 
+# Node/build outputs.
+node_modules/
+npm-debug.log*
+.npmrc.local
+.vite/
+tmpZips/
+_zipdiff/
+
 # Local agent output / OS cruft.
 .ai/
 .ssh/

@@ -16,9 +16,10 @@ This repository builds, reviews, validates, packages, and publishes **versioned 
   - Per-theme preview: `docs/themes/<theme-slug>/index.html`
 - ZIP outputs belong in `zippedTheme/` (build output):
   - Never put ZIPs under `wp-content/themes/`.
-  - Never commit generated ZIPs unless explicitly requested.
-  - Always generate fresh ZIPs into `zippedTheme/` and validate their contents.
-- GitHub Actions creates zip artifacts for each theme. Do not rely on committed zip files.
+  - ZIPs are committed in this repo so they can be downloaded directly from GitHub.
+  - If you change `wp-content/themes/<theme-slug>/`, you must regenerate and commit `zippedTheme/<theme-slug>.zip`.
+  - CI will fail if committed zips are stale compared to the theme source.
+- GitHub Actions also uploads freshly-built zip artifacts for each theme as `theme-zips`.
 - Do not modify WordPress core files.
 - Do not commit uploads, cache files, backups, or environment files.
 - Local Codex prompts live in `.github/codex/prompts/`.
@@ -43,7 +44,7 @@ This repository builds, reviews, validates, packages, and publishes **versioned 
 - Build the full WordPress theme in a numbered folder under `wp-content/themes/`.
 - Also build a static visual preview in `docs/themes/<theme-slug>/` so GitHub Pages can show a sneak peek of the theme.
 - The preview should mirror the homepage design and interactions as closely as possible using static HTML, CSS, and vanilla JavaScript.
-- The preview must not require build tools, remote CDNs, API keys, SSH, SFTP, or external services.
+- The preview must not require remote CDNs, API keys, SSH, SFTP, or paid external services at runtime.
 - Required gallery entry file: `docs/index.html`.
 - Required per-theme preview entry file: `docs/themes/<theme-slug>/index.html`.
 
@@ -89,5 +90,6 @@ A task is done only when:
 - A static per-theme preview exists at `docs/themes/<theme-slug>/index.html`.
 - PHP files pass syntax checks (`php -l`).
 - Generated zips exist under `zippedTheme/` and contain key files (style.css, functions.php, assets/css/theme.css, assets/js/theme.js).
+- If React entrypoints are used (`theme.entry.*` / `preview.entry.*`), `npm run build:react-bundles` has been run and the generated outputs are committed.
 - Obvious broken links, missing assets, and invalid paths are avoided.
 - The PR summary explains what changed.

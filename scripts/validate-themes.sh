@@ -5,6 +5,29 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 THEMES_DIR="$ROOT_DIR/wp-content/themes"
 DOCS_DIR="$ROOT_DIR/docs"
 
+needs_node_build=0
+if find "$THEMES_DIR" -type f \( -name "theme.entry.js" -o -name "theme.entry.jsx" -o -name "theme.entry.ts" -o -name "theme.entry.tsx" \) -print -quit | grep -q .; then
+  needs_node_build=1
+fi
+if find "$DOCS_DIR/themes" -type f \( -name "preview.entry.js" -o -name "preview.entry.jsx" -o -name "preview.entry.ts" -o -name "preview.entry.tsx" \) -print -quit 2>/dev/null | grep -q .; then
+  needs_node_build=1
+fi
+
+if [ "$needs_node_build" -eq 1 ]; then
+  if ! command -v node >/dev/null 2>&1; then
+    echo "node is required on PATH when using React entrypoints (theme.entry.* / preview.entry.*)." >&2
+    exit 1
+  fi
+  if ! command -v npm >/dev/null 2>&1; then
+    echo "npm is required on PATH when using React entrypoints (theme.entry.* / preview.entry.*)." >&2
+    exit 1
+  fi
+  if [ -f "$ROOT_DIR/package.json" ]; then
+    echo "Building React bundles (entrypoints detected)..."
+    (cd "$ROOT_DIR" && npm run build:react-bundles)
+  fi
+fi
+
 if ! command -v php >/dev/null 2>&1; then
   echo "php is required on PATH for validation." >&2
   exit 1

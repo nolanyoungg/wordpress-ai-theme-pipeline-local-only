@@ -59,6 +59,16 @@ codex exec --cd "$ROOT_DIR" "${CODEX_ARGS[@]}" --sandbox workspace-write --outpu
 THEME_FS_DIR="$ROOT_DIR/$THEME_DIR"
 THEME_FS_ZIP="$ROOT_DIR/$THEME_ZIP"
 if [ -d "$THEME_FS_DIR" ]; then
+  # Optional: if the generated theme/preview includes React entrypoints, build bundles before packaging.
+  if [ -f "$ROOT_DIR/package.json" ]; then
+    if find "$THEME_FS_DIR/assets/js" -maxdepth 1 -type f -name "theme.entry.*" -print -quit 2>/dev/null | grep -q .; then
+      (cd "$ROOT_DIR" && npm run build:react-bundles)
+    fi
+    if find "$ROOT_DIR/docs/themes/$THEME_SLUG/assets/js" -maxdepth 1 -type f -name "preview.entry.*" -print -quit 2>/dev/null | grep -q .; then
+      (cd "$ROOT_DIR" && npm run build:react-bundles)
+    fi
+  fi
+
   rm -f "$THEME_FS_ZIP"
   mkdir -p "$ROOT_DIR/zippedTheme"
   (
