@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -42,6 +44,39 @@ jobs:
 
           printf '%s\n' "${themes[@]}" | sort > .themes.txt
           echo "count=$(wc -l < .themes.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Determine changed themes
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base_sha=""
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base_sha="${{ github.event.pull_request.base.sha }}"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            base_sha="${{ github.event.before }}"
+          fi
+
+          if [ -z "$base_sha" ] || [ "$base_sha" = "0000000000000000000000000000000000000000" ]; then
+            if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+              base_sha="$(git rev-parse HEAD^)"
+            else
+              base_sha="$(git rev-parse HEAD)"
+            fi
+          fi
+
+          echo "Base SHA: $base_sha"
+          echo "Head SHA: $GITHUB_SHA"
+
+          changed_paths="$(git diff --name-only "$base_sha" "$GITHUB_SHA" || true)"
+
+          # Record which theme versions changed (source and/or preview). We enforce zip freshness
+          # for theme source changes, and require zips to exist for any detected theme folder.
+          printf '%s\n' "$changed_paths" > .changed-paths.txt
+
+          awk -F/ '/^wp-content\/themes\/nolan-showcase-theme-x[0-9]+\// {print $3}' .changed-paths.txt | sort -u > .changed-themes.txt
+          echo "changed_count=$(wc -l < .changed-themes.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
 
       - name: Validate theme files and PHP syntax
         shell: bash
@@ -147,12 +182,26 @@ jobs:
             fi
           done < .themes.txt
 
-      - name: Build theme zip files
+      - name: Verify committed zips exist
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p zippedTheme
-          rm -f zippedTheme/*.zip
+          while IFS= read -r theme_dir; do
+            [ -d "$theme_dir" ] || continue
+            theme_slug="$(basename "$theme_dir")"
+            if [ ! -f "zippedTheme/${theme_slug}.zip" ]; then
+              echo "::error::Missing committed zip for $theme_slug at zippedTheme/${theme_slug}.zip"
+              echo "::error::Regenerate and commit the zip for this theme version."
+              exit 1
+            fi
+          done < .themes.txt
+
+      - name: Build theme zip files (fresh)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p tmpZips
+          rm -f tmpZips/*.zip
 
           while IFS= read -r theme_dir; do
             [ -d "$theme_dir" ] || continue
@@ -160,9 +209,52 @@ jobs:
             echo "==> Packaging $theme_slug.zip"
             (
               cd wp-content/themes
-              zip -qr "../../zippedTheme/${theme_slug}.zip" "$theme_slug"
+              zip -qr "../../tmpZips/${theme_slug}.zip" "$theme_slug"
             )
           done < .themes.txt
+
+      - name: Verify committed zips match source for changed themes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ ! -s .changed-themes.txt ]; then
+            echo "No theme source changes detected; skipping committed zip freshness check."
+            exit 0
+          fi
+
+          # Compare by extracted file content hashes (zip timestamps/metadata are not stable).
+          while IFS= read -r theme_slug; do
+            [ -n "$theme_slug" ] || continue
+            committed_zip="zippedTheme/${theme_slug}.zip"
+            built_zip="tmpZips/${theme_slug}.zip"
+
+            [ -f "$committed_zip" ] || { echo "::error::Missing committed zip: $committed_zip"; exit 1; }
+            [ -f "$built_zip" ] || { echo "::error::Missing freshly built zip: $built_zip"; exit 1; }
+
+            rm -rf "_zipdiff/$theme_slug"
+            mkdir -p "_zipdiff/$theme_slug/committed" "_zipdiff/$theme_slug/built"
+            unzip -q "$committed_zip" -d "_zipdiff/$theme_slug/committed"
+            unzip -q "$built_zip" -d "_zipdiff/$theme_slug/built"
+
+            (
+              cd "_zipdiff/$theme_slug/committed"
+              find . -type f -print0 | sort -z | xargs -0 sha256sum
+            ) > "_zipdiff/$theme_slug/committed.sha"
+
+            (
+              cd "_zipdiff/$theme_slug/built"
+              find . -type f -print0 | sort -z | xargs -0 sha256sum
+            ) > "_zipdiff/$theme_slug/built.sha"
+
+            if ! diff -u "_zipdiff/$theme_slug/committed.sha" "_zipdiff/$theme_slug/built.sha" >/dev/null; then
+              echo "::error::Committed zip is stale for $theme_slug: $committed_zip"
+              echo "::error::Rebuild the zip from source and commit the updated zippedTheme/${theme_slug}.zip"
+              echo "::error::Diff (first 200 lines):"
+              diff -u "_zipdiff/$theme_slug/committed.sha" "_zipdiff/$theme_slug/built.sha" | sed -n '1,200p'
+              exit 1
+            fi
+          done < .changed-themes.txt
 
       - name: Verify zip contents
         shell: bash
@@ -172,7 +264,7 @@ jobs:
           while IFS= read -r theme_dir; do
             [ -d "$theme_dir" ] || continue
             theme_slug="$(basename "$theme_dir")"
-            zip_path="zippedTheme/${theme_slug}.zip"
+            zip_path="tmpZips/${theme_slug}.zip"
 
             [ -f "$zip_path" ] || { echo "::error::Missing zip: $zip_path"; exit 1; }
 
@@ -188,7 +280,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: theme-zips
-          path: zippedTheme/*.zip
+          path: tmpZips/*.zip
           if-no-files-found: error
 
   pages:
