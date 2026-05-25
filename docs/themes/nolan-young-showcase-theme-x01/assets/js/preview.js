@@ -1,206 +1,52 @@
-﻿
-
 document.addEventListener('DOMContentLoaded', () => {
-
-
-    const menuTriggers = document.querySelectorAll('.nolan-menu__trigger');
-
-
-    const panels = document.querySelectorAll('.nolan-menu__panel');
-
-
-    const backdrops = document.querySelector('.nolan-menu__backdrop');
-
-
-
-
-
-    function closeAllPanels() {
-
-
-        panels.forEach(panel => panel.style.display = 'none');
-
-
-        backdrops.style.display = 'none';
-
-
-        document.body.style.overflow = '';
-
-
-    }
-
-
-
-
-
-    menuTriggers.forEach(trigger => {
-
-
-        trigger.addEventListener('click', (e) => {
-
-
-            const targetPanelId = e.target.getAttribute('data-menu-item');
-
-
-            const targetPanel = document.querySelector(`div[data-menu-dropdown=${targetPanelId}]`);
-
-
-
-
-
-            if (targetPanel.style.display === 'none' || !targetPanel.style.display) {
-
-
-                closeAllPanels();
-
-
-                targetPanel.style.display = 'block';
-
-
-                backdrops.style.display = 'block';
-
-
-                document.body.style.overflow = 'hidden';
-
-
-            } else {
-
-
-                closeAllPanels();
-
-
-            }
-
-
-        });
-
-
-    });
-
-
-
-
-
-    backdrops.addEventListener('click', () => {
-
-
-        closeAllPanels();
-
-
-    });
-
-
-
-
-
-    document.addEventListener('keydown', (e) => {
-
-
-        if (e.key === 'Escape') {
-
-
-            closeAllPanels();
-
-
-        }
-
-
-    });
-
-
-
-
-
-    const railButtons = document.querySelectorAll('.nolan-menu__rail-button');
-
-
-    railButtons.forEach(button => {
-
-
-        button.addEventListener('click', () => {
-
-
-            const targetContentId = button.getAttribute('data-rail-item');
-
-
-            const contents = document.querySelectorAll('.nolan-menu__content section');
-
-
-
-
-
-            contents.forEach(content => {
-
-
-                if (content.getAttribute('data-rail-content') === targetContentId) {
-
-
-                    content.style.display = 'block';
-
-
-                } else {
-
-
-                    content.style.display = 'none';
-
-
-                }
-
-
-            });
-
-
-        });
-
-
-
-
-
-        button.addEventListener('focus', () => {
-
-
-            const targetContentId = button.getAttribute('data-rail-item');
-
-
-            const contents = document.querySelectorAll('.nolan-menu__content section');
-
-
-
-
-
-            contents.forEach(content => {
-
-
-                if (content.getAttribute('data-rail-content') === targetContentId) {
-
-
-                    content.style.display = 'block';
-
-
-                } else {
-
-
-                    content.style.display = 'none';
-
-
-                }
-
-
-            });
-
-
-        });
-
-
-    });
-
-
-
-
-
-    // Add mobile menu interactions here
-
-
+	const mobileToggle = document.querySelector('.mobile-toggle');
+	const primaryNav = document.querySelector('.primary-nav');
+	const backdrop = document.querySelector('.backdrop');
+	const panelButtons = document.querySelectorAll('.nav-trigger');
+	const panels = document.querySelectorAll('.mega-panel');
+
+	const closePanels = () => {
+		panels.forEach((panel) => {
+			panel.hidden = true;
+		});
+		backdrop.hidden = true;
+	};
+
+	const toggleMobileNav = () => {
+		const isOpen = primaryNav.classList.toggle('is-open');
+		mobileToggle.setAttribute('aria-expanded', String(isOpen));
+		backdrop.hidden = !isOpen;
+		if (!isOpen) {
+			closePanels();
+		}
+	};
+
+	mobileToggle?.addEventListener('click', toggleMobileNav);
+	backdrop?.addEventListener('click', () => {
+		primaryNav.classList.remove('is-open');
+		mobileToggle?.setAttribute('aria-expanded', 'false');
+		closePanels();
+	});
+
+	panelButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const panelId = button.getAttribute('data-panel');
+			const panel = document.querySelector(`[data-panel-content="${panelId}"]`);
+			const isHidden = panel?.hidden ?? true;
+
+			closePanels();
+			if (panel && isHidden) {
+				panel.hidden = false;
+				backdrop.hidden = false;
+			}
+		});
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') {
+			primaryNav.classList.remove('is-open');
+			mobileToggle?.setAttribute('aria-expanded', 'false');
+			closePanels();
+		}
+	});
 });
-
-
