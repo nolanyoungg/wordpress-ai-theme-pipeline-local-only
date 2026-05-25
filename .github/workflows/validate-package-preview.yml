@@ -272,7 +272,33 @@ jobs:
             exit 0
           fi
 
-          # Compare by extracted file content hashes (zip timestamps/metadata are not stable).
+          zip_manifest() {
+            local dir="$1"
+            (
+              cd "$dir"
+              find . -type f -print0 | sort -z | while IFS= read -r -d '' file; do
+                python3 - "$file" <<'PY'
+import hashlib
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+data = path.read_bytes()
+try:
+    text = data.decode("utf-8")
+except UnicodeDecodeError:
+    normalized = data
+else:
+    normalized = text.replace("\r\n", "\n").encode("utf-8")
+
+print(f"{hashlib.sha256(normalized).hexdigest()}  {path.as_posix()}")
+PY
+              done
+            )
+          }
+
+          # Compare extracted file contents. Normalize CRLF to LF for UTF-8 text so
+          # Windows-built committed zips can match Linux-built CI zips.
           while IFS= read -r theme_slug; do
             [ -n "$theme_slug" ] || continue
             committed_zip="zippedTheme/${theme_slug}.zip"
@@ -286,15 +312,8 @@ jobs:
             unzip -q "$committed_zip" -d "_zipdiff/$theme_slug/committed"
             unzip -q "$built_zip" -d "_zipdiff/$theme_slug/built"
 
-            (
-              cd "_zipdiff/$theme_slug/committed"
-              find . -type f -print0 | sort -z | xargs -0 sha256sum
-            ) > "_zipdiff/$theme_slug/committed.sha"
-
-            (
-              cd "_zipdiff/$theme_slug/built"
-              find . -type f -print0 | sort -z | xargs -0 sha256sum
-            ) > "_zipdiff/$theme_slug/built.sha"
+            zip_manifest "_zipdiff/$theme_slug/committed" > "_zipdiff/$theme_slug/committed.sha"
+            zip_manifest "_zipdiff/$theme_slug/built" > "_zipdiff/$theme_slug/built.sha"
 
             if ! diff -u "_zipdiff/$theme_slug/committed.sha" "_zipdiff/$theme_slug/built.sha" >/dev/null; then
               echo "::error::Committed zip is stale for $theme_slug: $committed_zip"
