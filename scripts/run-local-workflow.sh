@@ -27,7 +27,7 @@ if [ -n "${CODEX_RUN_REASONING_EFFORT:-}" ]; then
   CODEX_ARGS+=(-c "model_reasoning_effort=\"${CODEX_RUN_REASONING_EFFORT}\"")
 fi
 
-BASE_THEME_SLUG="nolan-showcase-theme"
+BASE_THEME_SLUG="nolan-young-showcase-theme"
 THEME_VERSION=1
 while IFS= read -r THEME_BASE; do
   if [[ "$THEME_BASE" =~ ^${BASE_THEME_SLUG}-x([0-9]+)$ ]]; then
@@ -47,7 +47,7 @@ export THEME_SLUG THEME_DISPLAY_NAME THEME_DIR THEME_ZIP THEME_VERSION
 
 CURRENT_BRANCH="$(git -C "$ROOT_DIR" branch --show-current)"
 if [ "$CURRENT_BRANCH" = "main" ]; then
-  FEATURE_BRANCH="ai/$(date +%Y%m%d-%H%M%S)-nolan-showcase-theme"
+  FEATURE_BRANCH="ai/$(date +%Y%m%d-%H%M%S)-nolan-young-showcase-theme"
   git -C "$ROOT_DIR" checkout -b "$FEATURE_BRANCH"
   echo "Switched to feature branch: $FEATURE_BRANCH"
 fi

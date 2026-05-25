@@ -47,9 +47,9 @@ function Ensure-Ollama([string]$BaseUri, [string]$Model) {
 function Get-LatestThemeVersion([string]$ThemesDir) {
 	$max = 0
 	Get-ChildItem -LiteralPath $ThemesDir -Directory -ErrorAction Stop |
-		Where-Object { $_.Name -match '^nolan-showcase-theme-x(\d+)$' } |
+		Where-Object { $_.Name -match '^nolan-young-showcase-theme-x(\d+)$' } |
 		ForEach-Object {
-			$v = [int]([regex]::Match($_.Name, '^nolan-showcase-theme-x(\d+)$').Groups[1].Value)
+			$v = [int]([regex]::Match($_.Name, '^nolan-young-showcase-theme-x(\d+)$').Groups[1].Value)
 			if ($v -gt $max) { $max = $v }
 		}
 	return $max
@@ -110,12 +110,11 @@ $workflowMode = Get-WorkflowMode
 if ($workflowMode -eq "no-planner") { $workflowMode = "builder-only" }
 
 $latestVersion = Get-LatestThemeVersion -ThemesDir $themesDir
-if ($latestVersion -lt 1) { Write-Die "No existing numbered themes found to copy as a starter." }
 
 $nextVersion = $latestVersion + 1
 $THEME_VERSION = $nextVersion
-$THEME_SLUG = "nolan-showcase-theme-x$THEME_VERSION"
-$THEME_DISPLAY_NAME = "Nolan Showcase Theme X$THEME_VERSION"
+$THEME_SLUG = "nolan-young-showcase-theme-x{0:D2}" -f $THEME_VERSION
+$THEME_DISPLAY_NAME = "Nolan Young Showcase Theme X{0:D2}" -f $THEME_VERSION
 $THEME_DIR = "wp-content/themes/$THEME_SLUG"
 $PREVIEW_DIR = "docs/themes/$THEME_SLUG"
 $THEME_ZIP = "zippedTheme/$THEME_SLUG.zip"
@@ -123,23 +122,31 @@ $THEME_ZIP = "zippedTheme/$THEME_SLUG.zip"
 Write-Output "THEME_SLUG=$THEME_SLUG"
 Write-Output "THEME_DISPLAY_NAME=$THEME_DISPLAY_NAME"
 
-# Find latest existing theme/preview to copy.
-$latestSlug = "nolan-showcase-theme-x$latestVersion"
-$latestThemeDir = "wp-content/themes/$latestSlug"
-$latestPreviewDir = "docs/themes/$latestSlug"
+$latestSlug = ""
+$latestThemeDir = ""
+$latestPreviewDir = ""
+if ($latestVersion -ge 1) {
+	# Find latest existing theme/preview to copy.
+	$latestSlug = ("nolan-young-showcase-theme-x{0:D2}" -f $latestVersion)
+	$latestThemeDir = "wp-content/themes/$latestSlug"
+	$latestPreviewDir = "docs/themes/$latestSlug"
 
-Copy-Starter -Src (Join-Path $root $latestThemeDir) -Dst (Join-Path $root $THEME_DIR)
-Copy-Starter -Src (Join-Path $root $latestPreviewDir) -Dst (Join-Path $root $PREVIEW_DIR)
+	Copy-Starter -Src (Join-Path $root $latestThemeDir) -Dst (Join-Path $root $THEME_DIR)
+	Copy-Starter -Src (Join-Path $root $latestPreviewDir) -Dst (Join-Path $root $PREVIEW_DIR)
+
+	Replace-ObviousVersionRefs -Root $root -OldSlug $latestSlug -NewSlug $THEME_SLUG -OldDisplay ("Nolan Young Showcase Theme X{0:D2}" -f $latestVersion) -NewDisplay $THEME_DISPLAY_NAME
+} else {
+	New-Item -ItemType Directory -Force (Join-Path $root $THEME_DIR) | Out-Null
+	New-Item -ItemType Directory -Force (Join-Path $root $PREVIEW_DIR) | Out-Null
+}
 
 $createdThemeFull = Join-Path $root $THEME_DIR
 $createdPreviewFull = Join-Path $root $PREVIEW_DIR
 
-Replace-ObviousVersionRefs -Root $root -OldSlug $latestSlug -NewSlug $THEME_SLUG -OldDisplay ("Nolan Showcase Theme X$latestVersion") -NewDisplay $THEME_DISPLAY_NAME
-
 try {
 	# Planner -> Builder -> Validate -> Reviewer -> optional Fixer -> Validate -> Zip
 	if ($workflowMode -eq "full") {
-		Write-Output "Running Planner Agent via Ollama ($model)..."
+	Write-Output "Running Planner Agent via Ollama ($model)..."
 		& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "planner" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
 	} else {
 		Write-Output "Skipping Planner Agent (OLLAMA_WORKFLOW_MODE=$workflowMode)."

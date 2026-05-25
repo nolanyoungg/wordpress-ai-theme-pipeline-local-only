@@ -10,7 +10,7 @@ const ROOT_DIR = path.resolve(__dirname, "..");
 const THEMES_DIR = path.join(ROOT_DIR, "wp-content", "themes");
 const DOCS_THEMES_DIR = path.join(ROOT_DIR, "docs", "themes");
 
-const THEME_RE = /^nolan-showcase-theme-x(\d+)$/;
+const THEME_RE = /^nolan-young-showcase-theme-x(\d+)$/;
 const exts = [".tsx", ".jsx", ".ts", ".js"];
 
 function listThemeSlugs() {

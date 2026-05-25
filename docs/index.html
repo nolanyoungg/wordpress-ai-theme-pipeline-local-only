@@ -6,17 +6,18 @@
 	<title>WordPress AI Theme Pipeline</title>
 	<style>
 		:root{
-			--bg:#050713;
-			--bg2:#0b1233;
-			--text:#e7ecff;
-			--muted:#9aa6d6;
-			--line:rgba(149,170,255,.14);
-			--blue:#2f6bff;
-			--blue2:#58b7ff;
-			--radius:14px;
+			--bg:#fffaf3;
+			--bg2:#f7f1e7;
+			--text:#1f1c18;
+			--muted:#645b50;
+			--line:rgba(31,28,24,.12);
+			--accent:#b99558;
+			--accent2:#b66f4f;
+			--card:#ffffff;
+			--radius:18px;
 			--max:1120px;
-			--mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-			--sans:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+			--sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+			--mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 		}
 		*{box-sizing:border-box}
 		body{
@@ -24,189 +25,103 @@
 			font-family:var(--sans);
 			color:var(--text);
 			background:
-				radial-gradient(1200px 700px at 10% -10%, rgba(47,107,255,.26), transparent 58%),
-				radial-gradient(900px 520px at 80% 10%, rgba(88,183,255,.14), transparent 55%),
-				linear-gradient(180deg, var(--bg), #070b1f 40%, var(--bg));
+				radial-gradient(1000px 700px at 10% -10%, rgba(185,149,88,.14), transparent 58%),
+				radial-gradient(900px 700px at 90% 0%, rgba(182,111,79,.10), transparent 58%),
+				linear-gradient(180deg, var(--bg), var(--bg2) 60%, var(--bg));
 			line-height:1.6;
 		}
-		a{color:inherit; text-decoration:none}
-		.container{width:min(var(--max), calc(100% - 48px)); margin:64px auto}
-		.header{
-			display:flex;
-			align-items:flex-end;
-			justify-content:space-between;
-			gap:16px;
-			margin-bottom:26px;
+		a{color:inherit}
+		.container{width:min(var(--max), calc(100% - 48px)); margin:72px auto}
+		.shell{
+			border:1px solid var(--line);
+			border-radius:var(--radius);
+			background:rgba(255,255,255,.78);
+			box-shadow:0 24px 60px rgba(31,28,24,.08);
+			padding:28px;
 		}
-		.kicker{margin:0 0 10px 0; font-family:var(--mono); letter-spacing:.08em; text-transform:uppercase; font-size:12px; color:var(--muted)}
-		h1{margin:0 0 10px 0; font-size:clamp(28px, 2.6vw, 44px); line-height:1.12}
-		p{margin:0; color:rgba(231,236,255,.78); max-width:80ch}
-		.badge{
-			padding:10px 12px;
-			border-radius:999px;
-			border:1px solid rgba(149,170,255,.18);
-			background:rgba(10,16,40,.5);
+		.kicker{
+			margin:0 0 10px;
 			font-family:var(--mono);
 			font-size:12px;
-			letter-spacing:.06em;
+			letter-spacing:.14em;
 			text-transform:uppercase;
-			white-space:nowrap;
+			color:var(--muted);
 		}
-		.grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; margin-top:26px}
+		h1{
+			margin:0 0 14px;
+			font-size:clamp(32px, 3vw, 54px);
+			line-height:1.04;
+		}
+		p{margin:0 0 14px; max-width:70ch; color:rgba(31,28,24,.82)}
+		.grid{
+			display:grid;
+			grid-template-columns:repeat(2, minmax(0, 1fr));
+			gap:18px;
+			margin-top:24px;
+		}
 		.card{
-			border-radius:var(--radius);
-			background:linear-gradient(180deg, rgba(18,28,64,.64), rgba(10,16,40,.44));
-			border:1px solid rgba(149,170,255,.18);
-			padding:18px 18px 20px;
-			min-height:160px;
+			border:1px solid var(--line);
+			border-radius:16px;
+			background:var(--card);
+			padding:18px;
 		}
-		.card h2{margin:0 0 10px 0; font-size:18px; line-height:1.2}
-		.card p{margin:0 0 16px 0}
-		.card .meta{display:flex; gap:10px; align-items:center; justify-content:space-between}
-		.link{
+		.card h2{margin:0 0 8px; font-size:18px}
+		.card p{margin:0; color:rgba(31,28,24,.74)}
+		.btn-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:22px}
+		.btn{
 			display:inline-flex;
 			align-items:center;
-			gap:10px;
+			justify-content:center;
 			padding:12px 16px;
-			border-radius:14px;
-			border:1px solid rgba(149,170,255,.18);
-			background:rgba(10,16,40,.5);
-			font-family:var(--mono);
-			font-size:12px;
-			letter-spacing:.06em;
-			text-transform:uppercase;
+			border-radius:999px;
+			border:1px solid var(--line);
+			text-decoration:none;
+			font-weight:700;
 		}
-		.link.primary{background:linear-gradient(135deg, rgba(47,107,255,.95), rgba(88,183,255,.65)); border-color:rgba(139,213,255,.28)}
-		.footer{margin-top:42px; padding-top:18px; border-top:1px solid var(--line); color:rgba(154,166,214,.95); font-size:12px}
-		@media (max-width: 980px){.grid{grid-template-columns:1fr}.header{flex-direction:column; align-items:flex-start}}
+		.btn-primary{background:linear-gradient(135deg, var(--accent), #d8c4a4); color:#11100d}
+		.btn-secondary{background:#fff; color:#11100d}
+		.footer{
+			margin-top:24px;
+			padding-top:18px;
+			border-top:1px solid var(--line);
+			color:rgba(31,28,24,.72);
+			font-size:13px;
+		}
+		@media (max-width: 720px){
+			.container{width:calc(100% - 32px); margin:32px auto}
+			.shell{padding:20px}
+			.grid{grid-template-columns:1fr}
+		}
 	</style>
 </head>
 <body>
 	<main class="container">
-		<header class="header">
-			<div>
-				<p class="kicker">GitHub Pages Gallery</p>
-				<h1>Nolan Young WordPress Theme Pipeline</h1>
-				<p>Static previews live here. WordPress/PHP is not executed on GitHub Pages; each theme preview is a hand-built HTML mirror of the theme design. Zipped Versions of full WordPress themes shown here are available.</p>
+		<section class="shell">
+			<p class="kicker">GitHub Pages Gallery</p>
+			<h1>No generated themes are committed right now.</h1>
+			<p>The repository has been cleaned back to a blank starting point. The next local Ollama run will create <strong>nolan-young-showcase-theme-x01</strong> and its matching static preview.</p>
+			<p>Use the local workflow in <a href="../README-LOCAL-ONLY.md">README-LOCAL-ONLY.md</a> to generate the first version, validate it, and then open a PR for review.</p>
+
+			<div class="grid" aria-label="Current state">
+				<div class="card">
+					<h2>Theme source</h2>
+					<p>No versioned `nolan-young-showcase-theme` folders are present yet.</p>
+				</div>
+				<div class="card">
+					<h2>Preview gallery</h2>
+					<p>No preview folders are linked yet. This page intentionally avoids dead links.</p>
+				</div>
 			</div>
-			<span class="badge">No API key required</span>
-		</header>
 
-		<section class="grid" aria-label="Theme previews">
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X1</h2>
-				<p>Dark, premium, high-tech portfolio with glass cards, electric-blue accents, and a systems-first layout.</p>
-				<div class="meta">
-					<a class="link primary" href="themes/nolan-showcase-theme-x1/index.html">Open Preview</a>
-					<span class="badge">x1</span>
-				</div>
-			</article>
+			<div class="btn-row">
+				<a class="btn btn-primary" href="../README-LOCAL-ONLY.md">Run workflow guide</a>
+				<a class="btn btn-secondary" href="https://github.com/nolanyoungg/wordpress-ai-theme-pipeline-local-only">Repository</a>
+			</div>
 
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X2</h2>
-				<p>Blue-led system dashboard layout with a capability console, blueprint sections, and metrics emphasis.</p>
-				<div class="meta">
-					<a class="link" href="themes/nolan-showcase-theme-x2/index.html">Open Preview</a>
-					<span class="badge">x2</span>
-				</div>
-			</article>
-
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X3</h2>
-				<p>Systems map hero with capability grid, process rail, impact counters, and stack cloud layout.</p>
-				<div class="meta">
-					<a class="link" href="themes/nolan-showcase-theme-x3/index.html">Open Preview</a>
-					<span class="badge">x3</span>
-				</div>
-			</article>
-
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X4</h2>
-				<p>Premium landscaping / lawn care site with emerald-lime accents, glass cards, services grid, projects gallery, and pricing tiers.</p>
-				<div class="meta">
-					<a class="link" href="themes/nolan-showcase-theme-x4/index.html">Open Preview</a>
-					<span class="badge">x4</span>
-				</div>
-			</article>
-
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X5</h2>
-				<p>High-end photography brand theme for MNY Photo with warm-luxury dark editorial styling, cinematic hero, curated portfolio grid, and conversion-focused sections.</p>
-				<div class="meta">
-					<a class="link" href="themes/nolan-showcase-theme-x5/index.html">Open Preview</a>
-					<span class="badge">x5</span>
-				</div>
-			</article>
-
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X6</h2>
-				<p>Premium editorial photography theme for MNY Photo with warm-luxury styling, multi-page navigation, portfolio filtering, and conversion-focused sections.</p>
-				<div class="meta">
-					<a class="link" href="themes/nolan-showcase-theme-x6/index.html">Open Preview</a>
-					<span class="badge">x6</span>
-				</div>
-			</article>
-
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X7</h2>
-				<p>Premium cinematic/editorial photography theme for MNY Photo with a richer Nolan menu system (desktop rail panels + mobile off-canvas) and a warm-luxury, conversion-focused multi-page layout.</p>
-				<div class="meta">
-					<a class="link" href="themes/nolan-showcase-theme-x7/index.html">Open Preview</a>
-					<span class="badge">x7</span>
-				</div>
-			</article>
-
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X8</h2>
-				<p>Clean, typography-forward portfolio theme with a hero, project card grid, and an accessible mobile navigation toggle.</p>
-				<div class="meta">
-					<a class="link" href="themes/nolan-showcase-theme-x8/index.html">Open Preview</a>
-					<span class="badge">x8</span>
-				</div>
-			</article>
-
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X9</h2>
-				<p>Bright, clean, modern editorial photography theme for MNY Photo with a premium Nolan menu (desktop rail panels + mobile drawer), rich multi-page layouts, and local demo photography assets.</p>
-				<div class="meta">
-					<a class="link" href="themes/nolan-showcase-theme-x9/index.html">Open Preview</a>
-					<span class="badge">x9</span>
-				</div>
-			</article>
-
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X10</h2>
-				<p>Premium, bright editorial/cinematic photography studio theme for MNY Photo with an accessible Nolan mega-menu (rail hover/focus), a lively interactive homepage, full page templates, and local demo photography assets.</p>
-				<div class="meta">
-					<a class="link" href="themes/nolan-showcase-theme-x10/index.html">Open Preview</a>
-					<span class="badge">x10</span>
-				</div>
-			</article>
-
-			<article class="card">
-				<p class="kicker">Theme version</p>
-				<h2>Nolan Showcase Theme X11</h2>
-				<p>Refined continuation of the MNY Photo bright editorial/cinematic theme with the Nolan mega-header (solid rail panels + mobile drawer), interactive front page modules, and a fully-mirrored multi-page static preview.</p>
-				<div class="meta">
-					<a class="link primary" href="themes/nolan-showcase-theme-x11/index.html">Open Preview</a>
-					<span class="badge">x11</span>
-				</div>
-			</article>
+			<div class="footer">
+				<span>GitHub Pages will render this page once the repo Pages settings are enabled and the site is deployed.</span>
+			</div>
 		</section>
-
-		<footer class="footer">
-			<span>© 2026 Nolan Young</span>
-		</footer>
 	</main>
 </body>
 </html>

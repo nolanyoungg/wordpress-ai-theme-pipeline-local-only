@@ -1,13 +1,6 @@
-# WordPress AI Theme Pipeline (Local-Only, Ollama)
+# WordPress AI Theme Pipeline - Local Only
 
-This repository is a local-only WordPress theme pipeline that preserves the versioned theme architecture and GitHub Pages preview structure, but replaces Codex/OpenAI with local Ollama-powered agents.
-
-Key points:
-- Codex is not part of the active workflow.
-- OpenAI is not part of the active workflow.
-- All agent steps use local Ollama at `http://localhost:11434`.
-- Default model: `qwen2.5-coder:32b` (override via `$env:OLLAMA_MODEL`).
-- GitHub Actions (if enabled) are validation/packaging/pages only and must not call any AI provider.
+This repo is the local-only Ollama version of the WordPress theme pipeline. The repo is intentionally clean right now: no generated theme folders, no generated preview folders, and no committed ZIPs. The first run should create `nolan-young-showcase-theme-x01`.
 
 ## Prerequisites
 
@@ -39,87 +32,69 @@ $env:OLLAMA_MODEL="qwen2.5-coder:32b"
 powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "Create the next versioned WordPress theme for a premium AI automation and web development company. Make it visually impressive, highly interactive, mobile-first, accessible, and include the matching static preview."
 ```
 
-### Skip the Planner (optional)
+## Run (create next versioned theme + preview + skip planner)
 
-The default workflow runs Planner -> Builder -> Validate -> Reviewer -> (optional) Fixer -> Validate.
-
-To skip the Planner and go straight to Builder:
+`builder-only` skips the planner step and runs the builder/reviewer workflow directly.
 
 ```powershell
+$env:OLLAMA_MODEL="qwen2.5-coder:32b"
 $env:OLLAMA_WORKFLOW_MODE="builder-only"
+powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "Create the next versioned WordPress theme for a premium AI automation and web development company. Make it visually impressive, highly interactive, mobile-first, accessible, and include the matching static preview."
 ```
 
-### Keep failed outputs (optional)
+## Validate
 
-By default, if the workflow fails mid-run, it deletes the newly created theme/preview folders to avoid leaving half-finished versions around.
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/validate-themes.ps1
+```
 
-To keep partial outputs for debugging:
+## Keep Failed Outputs
+
+By default, failed runs remove the partially created theme and preview folders.
 
 ```powershell
 $env:OLLAMA_KEEP_FAILED_OUTPUT="1"
 ```
 
-## Validate (themes + previews + zip)
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/validate-themes.ps1
-```
-
-## Manual git commands
-
-```powershell
-git status
-git add .
-git commit -m "Add local Ollama-built theme version"
-```
-
-Optional push command:
-
-```powershell
-git push
-```
-
-## PR workflow (recommended)
+## PR Workflow
 
 1. Create a branch:
 
 ```powershell
-git checkout -b feature/theme-xN
+git checkout -b feature/theme-x01
 ```
 
-2. Run the workflow to generate the next versioned theme:
-
-```powershell
-$env:OLLAMA_MODEL="qwen2.5-coder:32b"
-powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "YOUR THEME TASK HERE"
-```
-
-3. Validate:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/validate-themes.ps1
-```
-
+2. Run the workflow.
+3. Validate.
 4. Commit and push:
 
 ```powershell
 git status
 git add -A
-git commit -m "Add Nolan Showcase Theme XN (Ollama local-only)"
+git commit -m "Add nolan-young-showcase-theme-x01"
 git push -u origin HEAD
 ```
 
-5. Open a Pull Request on GitHub from your pushed branch into `main`.
+5. Open a Pull Request from your branch into `main`.
 
-## How the Ollama agent flow works
+## Workflow Notes
 
-The local workflow entrypoint is `scripts/run-local-ollama-workflow.ps1`:
+`scripts/run-local-ollama-workflow.ps1`:
 
-1. Detects the next available `nolan-showcase-theme-xN` version.
-2. Copies the latest existing theme + preview as a starter for the new version.
-3. Runs the Planner Agent (Ollama) to create a plan (no file writes).
-4. Runs the Builder Agent (Ollama) which outputs file blocks; the workflow parses and writes those files safely.
-5. Runs `scripts/validate-themes.ps1` for required files, PHP lint (when available), preview checks, and ZIP packaging.
-6. Runs the Reviewer Agent (Ollama) to spot issues.
-7. If needed, runs the Fixer Agent (Ollama) to make targeted repairs via file blocks.
-8. Validates again and rebuilds the theme ZIP.
+1. Detects the next available `nolan-young-showcase-theme-xNN`.
+2. Creates theme and preview folders.
+3. Runs the Planner Agent unless `OLLAMA_WORKFLOW_MODE=builder-only`.
+4. Runs the Builder Agent and writes safe file blocks.
+5. Runs validation.
+6. Runs the Reviewer Agent.
+7. Runs the Fixer Agent if needed.
+8. Validates again and packages the ZIP.
+
+The workflow uses:
+- `scripts/invoke-ollama.ps1`
+- `scripts/ollama-agent.ps1`
+- `scripts/validate-themes.ps1`
+
+The only allowed AI endpoint is `http://localhost:11434`.
+No cloud AI providers are part of the active workflow.
+

@@ -9,7 +9,7 @@ if [ ! -d "$THEMES_DIR" ]; then
   exit 1
 fi
 
-find "$THEMES_DIR" -maxdepth 1 -type d -name 'nolan-showcase-theme-x*' -print0 \
+find "$THEMES_DIR" -maxdepth 1 -type d -name 'nolan-young-showcase-theme-x*' -print0 \
   | while IFS= read -r -d '' theme_path; do
       theme_slug="$(basename "$theme_path")"
       version="${theme_slug##*-x}"

@@ -45,8 +45,8 @@ while IFS= read -r t; do
 done < <("$ROOT_DIR/scripts/list-theme-versions.sh")
 
 if [ "${#themes[@]}" -eq 0 ]; then
-  echo "No themes found matching nolan-showcase-theme-x* under $THEMES_DIR" >&2
-  exit 1
+  echo "No themes found matching nolan-young-showcase-theme-x* under $THEMES_DIR. Nothing to validate."
+  exit 0
 fi
 
 required_files=(

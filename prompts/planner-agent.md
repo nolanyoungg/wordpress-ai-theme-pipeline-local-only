@@ -8,8 +8,8 @@ Goal: produce a concise implementation plan for creating the next versioned clas
 
 Hard rules:
 - Preserve the existing numbered versioned architecture:
-  - `wp-content/themes/nolan-showcase-theme-xN/`
-  - `docs/themes/nolan-showcase-theme-xN/`
+  - `wp-content/themes/nolan-young-showcase-theme-xNN/`
+  - `docs/themes/nolan-young-showcase-theme-xNN/`
 - Never overwrite older theme versions.
 - Avoid unrelated refactors.
 - Use local assets only; no CDNs, remote images, remote fonts, API keys, secrets, or external runtime dependencies.
@@ -38,4 +38,3 @@ Output format:
 1. A short plan (bulleted or numbered).
 2. A list of files the Builder Agent should create/update (paths relative to repo root).
 3. Any risks/edge cases to watch (short).
-

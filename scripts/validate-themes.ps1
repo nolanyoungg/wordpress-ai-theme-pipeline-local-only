@@ -21,10 +21,10 @@ function Get-RepoRoot {
 
 function Get-ThemeSlugs([string]$ThemesDir) {
 	$dirs = Get-ChildItem -LiteralPath $ThemesDir -Directory -ErrorAction Stop |
-		Where-Object { $_.Name -match '^nolan-showcase-theme-x\d+$' }
+		Where-Object { $_.Name -match '^nolan-young-showcase-theme-x\d+$' }
 
 	$parsed = foreach ($d in $dirs) {
-		$m = [regex]::Match($d.Name, '^nolan-showcase-theme-x(\d+)$')
+		$m = [regex]::Match($d.Name, '^nolan-young-showcase-theme-x(\d+)$')
 		if ($m.Success) {
 			[pscustomobject]@{ Slug = $d.Name; Version = [int]$m.Groups[1].Value }
 		}
@@ -78,7 +78,11 @@ if ($needsNodeBuild) {
 
 $themes = Get-ThemeSlugs -ThemesDir $themesDir
 if (-not $themes -or $themes.Count -eq 0) {
-	Write-Die "No themes found matching nolan-showcase-theme-x* under $themesDir"
+	if ($ThemeSlug) {
+		Write-Die "Theme '$ThemeSlug' not found under $themesDir"
+	}
+	Write-Output "No themes found matching nolan-young-showcase-theme-x* under $themesDir. Nothing to validate."
+	exit 0
 }
 
 if ($ThemeSlug) {

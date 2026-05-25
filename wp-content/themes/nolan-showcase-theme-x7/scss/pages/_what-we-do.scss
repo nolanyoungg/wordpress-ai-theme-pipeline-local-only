@@ -1,6 +1,0 @@
-@use "../abstracts/variables" as v;
-
-.service-card__top { display:grid; grid-template-columns: 420px 1fr; gap: v.$space-6; align-items: start; }
-.service-card__media img { border-radius: v.$radius-l; border: 1px solid v.$line; background: rgba(v.$surface-2,.5); }
-@media (max-width: 1040px){ .service-card__top{ grid-template-columns: 1fr; } }
-
