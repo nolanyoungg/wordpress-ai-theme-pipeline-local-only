@@ -42,6 +42,13 @@ $env:OLLAMA_WORKFLOW_MODE="builder-only"
 powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "Create the next versioned WordPress theme for a premium AI automation and web development company. Make it visually impressive, highly interactive, mobile-first, accessible, and include the matching static preview."
 ```
 
+For longer prompts, save the prompt text to a `.txt` file and pass it with `Get-Content -Raw`:
+
+```powershell
+$env:OLLAMA_MODEL="qwen2.5-coder:32b"
+powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 (Get-Content -Raw "C:\Users\Nolan\Documents\Codex\.Prompts\mny-photo-theme-spec-local-ollama.txt")
+```
+
 ## Validate
 
 ```powershell
@@ -97,4 +104,3 @@ The workflow uses:
 
 The only allowed AI endpoint is `http://localhost:11434`.
 No cloud AI providers are part of the active workflow.
-

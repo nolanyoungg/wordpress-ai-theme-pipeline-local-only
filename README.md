@@ -36,6 +36,13 @@ $env:OLLAMA_WORKFLOW_MODE="builder-only"
 powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "Create the next versioned WordPress theme for a premium AI automation and web development company. Make it visually impressive, highly interactive, mobile-first, accessible, and include the matching static preview."
 ```
 
+For longer prompts, put the prompt text in a `.txt` file and pass it with `Get-Content -Raw` so PowerShell does not misread multiline input:
+
+```powershell
+$env:OLLAMA_MODEL="qwen2.5-coder:32b"
+powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 (Get-Content -Raw "C:\Users\Nolan\Documents\Codex\.Prompts\mny-photo-theme-spec-local-ollama.txt")
+```
+
 The first theme created from this clean state will be `nolan-young-showcase-theme-x01`.
 
 ## Validation
