@@ -54,28 +54,26 @@ $outDir = Split-Path -Parent $outFull
 if ($outDir) { New-Item -ItemType Directory -Force $outDir | Out-Null }
 
 try {
-	$resp = Invoke-RestMethod -Method Post -Uri "$baseUri/api/generate" -ContentType "application/json" -Body $body -TimeoutSec 3600
-} catch {
-	$details = $_.Exception.Message
-	$respBody = ""
-	try {
-		if ($_.Exception.Response -and $_.Exception.Response.GetResponseStream) {
-			$stream = $_.Exception.Response.GetResponseStream()
-			if ($stream) {
-				$reader = New-Object System.IO.StreamReader($stream)
-				$respBody = $reader.ReadToEnd()
-			}
-		}
-	} catch { }
+	Add-Type -AssemblyName System.Net.Http
+	$client = New-Object System.Net.Http.HttpClient
+	$client.Timeout = [TimeSpan]::FromHours(1)
 
-	if ($respBody) {
+	$content = New-Object System.Net.Http.StringContent($body, [System.Text.Encoding]::UTF8, "application/json")
+	$httpResp = $client.PostAsync("$baseUri/api/generate", $content).GetAwaiter().GetResult()
+	$respText = $httpResp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+
+	if (-not $httpResp.IsSuccessStatusCode) {
 		$rawStamp = Get-Date -Format "yyyyMMdd-HHmmss"
 		$errPath = Join-Path $aiDir ("ollama-generate-error-$rawStamp.txt")
-		$respBody | Set-Content -Encoding UTF8 -Path $errPath
-		Write-Die "Failed calling Ollama generate endpoint at $baseUri/api/generate. HTTP error. Details: $details. Response body saved to: $errPath"
+		$respText | Set-Content -Encoding UTF8 -Path $errPath
+		Write-Die "Failed calling Ollama generate endpoint at $baseUri/api/generate. HTTP $([int]$httpResp.StatusCode) $($httpResp.ReasonPhrase). Response body saved to: $errPath"
 	}
 
-	Write-Die "Failed calling Ollama generate endpoint at $baseUri/api/generate. Underlying error: $details"
+	$resp = $respText | ConvertFrom-Json
+} catch {
+	Write-Die "Failed calling Ollama generate endpoint at $baseUri/api/generate. Underlying error: $($_.Exception.Message)"
+} finally {
+	if ($client) { $client.Dispose() }
 }
 
 $rawStamp = Get-Date -Format "yyyyMMdd-HHmmss"
