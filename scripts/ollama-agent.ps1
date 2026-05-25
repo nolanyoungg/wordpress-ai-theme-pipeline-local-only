@@ -69,15 +69,15 @@ function Build-LatestContext([string]$Root, [string]$ThemeSlug, [string]$ThemeDi
 	$parts += ""
 
 	$files = @(
-		@("Theme header", Join-Path $Root $ThemeDir "style.css", 4000),
-		@("Theme functions", Join-Path $Root $ThemeDir "functions.php", 12000),
-		@("Theme front-page", Join-Path $Root $ThemeDir "front-page.php", 8000),
-		@("Theme JS", Join-Path $Root $ThemeDir "assets/js/theme.js", 8000),
-		@("Theme CSS (excerpt)", Join-Path $Root $ThemeDir "assets/css/theme.css", 8000),
-		@("Preview index (excerpt)", Join-Path $Root $PreviewDir "index.html", 12000),
-		@("Preview CSS (excerpt)", Join-Path $Root $PreviewDir "assets/css/preview.css", 8000),
-		@("Preview JS (excerpt)", Join-Path $Root $PreviewDir "assets/js/preview.js", 8000),
-		@("Docs gallery index", Join-Path $Root "docs/index.html", 8000)
+		@("Theme header", [System.IO.Path]::Combine($Root, $ThemeDir, "style.css"), 4000),
+		@("Theme functions", [System.IO.Path]::Combine($Root, $ThemeDir, "functions.php"), 12000),
+		@("Theme front-page", [System.IO.Path]::Combine($Root, $ThemeDir, "front-page.php"), 8000),
+		@("Theme JS", [System.IO.Path]::Combine($Root, $ThemeDir, "assets", "js", "theme.js"), 8000),
+		@("Theme CSS (excerpt)", [System.IO.Path]::Combine($Root, $ThemeDir, "assets", "css", "theme.css"), 8000),
+		@("Preview index (excerpt)", [System.IO.Path]::Combine($Root, $PreviewDir, "index.html"), 12000),
+		@("Preview CSS (excerpt)", [System.IO.Path]::Combine($Root, $PreviewDir, "assets", "css", "preview.css"), 8000),
+		@("Preview JS (excerpt)", [System.IO.Path]::Combine($Root, $PreviewDir, "assets", "js", "preview.js"), 8000),
+		@("Docs gallery index", [System.IO.Path]::Combine($Root, "docs", "index.html"), 8000)
 	)
 
 	foreach ($f in $files) {
