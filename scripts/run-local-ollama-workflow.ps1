@@ -70,8 +70,8 @@ function Replace-TextInFile([string]$Path, [hashtable]$Replacements) {
 function Replace-ObviousVersionRefs([string]$Root, [string]$OldSlug, [string]$NewSlug, [string]$OldDisplay, [string]$NewDisplay) {
 	# Keep this intentionally conservative: update obvious display/text-domain references in plain-text files.
 	$targets = @(
-		Join-Path $Root "wp-content/themes/$NewSlug/style.css",
-		Join-Path $Root "wp-content/themes/$NewSlug/README.md",
+		(Join-Path $Root "wp-content/themes/$NewSlug/style.css"),
+		(Join-Path $Root "wp-content/themes/$NewSlug/README.md"),
 		Join-Path $Root "docs/themes/$NewSlug/index.html"
 	)
 
