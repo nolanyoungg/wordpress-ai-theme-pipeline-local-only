@@ -1,0 +1,109 @@
+========================================
+TASK
+========================================
+
+Create the next versioned classic WordPress theme in this repo: nolan-young-showcase-theme-x03, plus a matching static GitHub Pages preview under docs/themes/nolan-young-showcase-theme-x03/.
+
+This repository is local-only AI (Ollama). Do NOT require any cloud AI, OPENAI_API_KEY, remote CDNs, or paid services at runtime.
+
+The WordPress theme must be production-quality and follow standard WordPress practices:
+- Proper enqueueing via functions.php
+- Safe escaping where applicable (esc_html, esc_attr, esc_url, wp_kses_post)
+- Keep templates readable/maintainable
+- Prefer local assets inside the theme
+
+The static preview must mirror the homepage design and interactions as closely as possible using only static HTML/CSS/vanilla JS.
+
+========================================
+CORE EXPERIENCE GOAL
+========================================
+
+Build a premium high-end WordPress agency website that feels:
+- Modern
+- Fast
+- Confident
+- Enterprise-capable
+- Conversion-focused
+- Highly polished
+- Mobile-perfect
+- Trustworthy for business owners
+
+The website should communicate:
+- We specialize in WordPress.
+- We solve real business problems.
+- We provide long-term technical partnership.
+- We handle everything from design to maintenance to AI integrations.
+- We are a reliable technical growth partner.
+
+The overall experience should feel:
+- Bigger than a freelancer
+- More modern than a generic template
+- Cleaner than most agencies
+- Easier to understand for non-technical users
+
+========================================
+VISUAL DIRECTION
+========================================
+
+Design a premium visual system with:
+- Strong typography hierarchy
+- Large spacing rhythm
+- Professional gradients
+- Elevated cards
+- Soft shadows
+- Rounded UI
+- Premium hover animations
+- High-end button styling
+- Modern responsive grids
+- Sticky header
+- Strong CTA positioning
+- Scroll reveal animations
+- Subtle transitions
+- Excellent mobile layouts
+
+Use:
+- White and dark contrast sections
+- Accent gradients
+- Glassmorphism where tasteful
+- Premium icon treatments (inline SVG ok, no icon CDNs)
+- Interactive cards
+- Section separators
+- Background texture accents
+- Layered hero sections
+- Animated stat counters
+- Visual trust indicators
+
+The site should NOT feel:
+- Corporate boring
+- Generic bootstrap template
+- Cheap SaaS clone
+- Flat or outdated
+
+========================================
+CONTENT SECTIONS (HOMEPAGE)
+========================================
+
+Include these sections (can be renamed, but must exist):
+- Hero with strong headline + primary CTA + secondary CTA
+- Trust row (logos/text badges, security/uptime/experience, etc.)
+- Services grid (WordPress builds, performance, maintenance, integrations, AI automation)
+- Case studies / featured projects
+- Process (discovery -> build -> launch -> iterate)
+- Testimonials
+- Pricing teaser / engagement models (retainer, project, support)
+- FAQ
+- Final CTA
+
+Include at least one accessible interactive element:
+- A tabbed section or accordion FAQ
+- A filterable grid or carousel
+- A sticky header with smooth anchor navigation
+
+========================================
+PERFORMANCE + ACCESSIBILITY
+========================================
+
+- Mobile-first, tap targets, readable contrast, focus styles
+- Avoid layout shift
+- No heavy JS frameworks in the preview (vanilla JS only)
+

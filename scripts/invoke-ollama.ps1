@@ -56,11 +56,40 @@ if ($outDir) { New-Item -ItemType Directory -Force $outDir | Out-Null }
 try {
 	Add-Type -AssemblyName System.Net.Http
 	$client = New-Object System.Net.Http.HttpClient
-	$client.Timeout = [TimeSpan]::FromHours(1)
+
+	# Some models/prompts can take a long time. Allow overriding via env var.
+	# Default: 2 hours (more forgiving than 1h to avoid spurious TaskCanceledException).
+	$timeoutMinutes = 120
+	if ($env:OLLAMA_HTTP_TIMEOUT_MINUTES) {
+		$parsed = 0
+		if ([int]::TryParse($env:OLLAMA_HTTP_TIMEOUT_MINUTES, [ref]$parsed) -and $parsed -ge 1) {
+			$timeoutMinutes = $parsed
+		}
+	}
+	$client.Timeout = [TimeSpan]::FromMinutes($timeoutMinutes)
 
 	$content = New-Object System.Net.Http.StringContent($body, [System.Text.Encoding]::UTF8, "application/json")
-	$httpResp = $client.PostAsync("$baseUri/api/generate", $content).GetAwaiter().GetResult()
-	$respText = $httpResp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+
+	$attempts = 3
+	$httpResp = $null
+	$respText = $null
+	for ($attempt = 1; $attempt -le $attempts; $attempt++) {
+		try {
+			$httpResp = $client.PostAsync("$baseUri/api/generate", $content).GetAwaiter().GetResult()
+			$respText = $httpResp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+			break
+		} catch {
+			# Ollama can intermittently drop/timeout long generations; retry a couple times.
+			$isCanceled =
+				$_.Exception -is [System.Threading.Tasks.TaskCanceledException] -or
+				($_.Exception.Message -match '(?i)task was canceled')
+			if ($isCanceled -and $attempt -lt $attempts) {
+				Start-Sleep -Seconds ([Math]::Min(30, 5 * $attempt))
+				continue
+			}
+			throw
+		}
+	}
 
 	if (-not $httpResp.IsSuccessStatusCode) {
 		$rawStamp = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -71,7 +100,11 @@ try {
 
 	$resp = $respText | ConvertFrom-Json
 } catch {
-	Write-Die "Failed calling Ollama generate endpoint at $baseUri/api/generate. Underlying error: $($_.Exception.Message)"
+	$hint = ""
+	if ($_.Exception -is [System.Threading.Tasks.TaskCanceledException] -or ($_.Exception.Message -match '(?i)task was canceled')) {
+		$hint = " This often means the request exceeded the HTTP timeout or Ollama stalled. Try setting OLLAMA_HTTP_TIMEOUT_MINUTES (e.g. 240) and rerun."
+	}
+	Write-Die "Failed calling Ollama generate endpoint at $baseUri/api/generate. Underlying error: $($_.Exception.Message)$hint"
 } finally {
 	if ($client) { $client.Dispose() }
 }
