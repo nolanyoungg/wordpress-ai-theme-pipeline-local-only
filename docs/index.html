@@ -1,127 +1,152 @@
-<!doctype html>
+﻿
+
+<!DOCTYPE html>
+
+
 <html lang="en">
+
+
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>WordPress AI Theme Pipeline</title>
-	<style>
-		:root{
-			--bg:#fffaf3;
-			--bg2:#f7f1e7;
-			--text:#1f1c18;
-			--muted:#645b50;
-			--line:rgba(31,28,24,.12);
-			--accent:#b99558;
-			--accent2:#b66f4f;
-			--card:#ffffff;
-			--radius:18px;
-			--max:1120px;
-			--sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
-			--mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-		}
-		*{box-sizing:border-box}
-		body{
-			margin:0;
-			font-family:var(--sans);
-			color:var(--text);
-			background:
-				radial-gradient(1000px 700px at 10% -10%, rgba(185,149,88,.14), transparent 58%),
-				radial-gradient(900px 700px at 90% 0%, rgba(182,111,79,.10), transparent 58%),
-				linear-gradient(180deg, var(--bg), var(--bg2) 60%, var(--bg));
-			line-height:1.6;
-		}
-		a{color:inherit}
-		.container{width:min(var(--max), calc(100% - 48px)); margin:72px auto}
-		.shell{
-			border:1px solid var(--line);
-			border-radius:var(--radius);
-			background:rgba(255,255,255,.78);
-			box-shadow:0 24px 60px rgba(31,28,24,.08);
-			padding:28px;
-		}
-		.kicker{
-			margin:0 0 10px;
-			font-family:var(--mono);
-			font-size:12px;
-			letter-spacing:.14em;
-			text-transform:uppercase;
-			color:var(--muted);
-		}
-		h1{
-			margin:0 0 14px;
-			font-size:clamp(32px, 3vw, 54px);
-			line-height:1.04;
-		}
-		p{margin:0 0 14px; max-width:70ch; color:rgba(31,28,24,.82)}
-		.grid{
-			display:grid;
-			grid-template-columns:repeat(2, minmax(0, 1fr));
-			gap:18px;
-			margin-top:24px;
-		}
-		.card{
-			border:1px solid var(--line);
-			border-radius:16px;
-			background:var(--card);
-			padding:18px;
-		}
-		.card h2{margin:0 0 8px; font-size:18px}
-		.card p{margin:0; color:rgba(31,28,24,.74)}
-		.btn-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:22px}
-		.btn{
-			display:inline-flex;
-			align-items:center;
-			justify-content:center;
-			padding:12px 16px;
-			border-radius:999px;
-			border:1px solid var(--line);
-			text-decoration:none;
-			font-weight:700;
-		}
-		.btn-primary{background:linear-gradient(135deg, var(--accent), #d8c4a4); color:#11100d}
-		.btn-secondary{background:#fff; color:#11100d}
-		.footer{
-			margin-top:24px;
-			padding-top:18px;
-			border-top:1px solid var(--line);
-			color:rgba(31,28,24,.72);
-			font-size:13px;
-		}
-		@media (max-width: 720px){
-			.container{width:calc(100% - 32px); margin:32px auto}
-			.shell{padding:20px}
-			.grid{grid-template-columns:1fr}
-		}
-	</style>
+
+
+    <meta charset="UTF-8">
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>Theme Gallery</title>
+
+
+    <style>
+
+
+        body {
+
+
+            font-family: Arial, sans-serif;
+
+
+            margin: 0;
+
+
+            padding: 20px;
+
+
+            background-color: #f9f7f3;
+
+
+            color: #2c2a28;
+
+
+        }
+
+
+        .gallery {
+
+
+            display: flex;
+
+
+            gap: 20px;
+
+
+            flex-wrap: wrap;
+
+
+        }
+
+
+        .card {
+
+
+            border: 1px solid #ddd;
+
+
+            border-radius: 5px;
+
+
+            overflow: hidden;
+
+
+            width: calc(33.33% - 40px);
+
+
+            box-sizing: border-box;
+
+
+        }
+
+
+        .card img {
+
+
+            max-width: 100%;
+
+
+            display: block;
+
+
+        }
+
+
+        .card-content {
+
+
+            padding: 15px;
+
+
+        }
+
+
+    </style>
+
+
 </head>
+
+
 <body>
-	<main class="container">
-		<section class="shell">
-			<p class="kicker">GitHub Pages Gallery</p>
-			<h1>No generated themes are committed right now.</h1>
-			<p>The repository has been cleaned back to a blank starting point. The next local Ollama run will create <strong>nolan-young-showcase-theme-x01</strong> and its matching static preview.</p>
-			<p>Use the local workflow in <a href="../README-LOCAL-ONLY.md">README-LOCAL-ONLY.md</a> to generate the first version, validate it, and then open a PR for review.</p>
 
-			<div class="grid" aria-label="Current state">
-				<div class="card">
-					<h2>Theme source</h2>
-					<p>No versioned `nolan-young-showcase-theme` folders are present yet.</p>
-				</div>
-				<div class="card">
-					<h2>Preview gallery</h2>
-					<p>No preview folders are linked yet. This page intentionally avoids dead links.</p>
-				</div>
-			</div>
 
-			<div class="btn-row">
-				<a class="btn btn-primary" href="../README-LOCAL-ONLY.md">Run workflow guide</a>
-				<a class="btn btn-secondary" href="https://github.com/nolanyoungg/wordpress-ai-theme-pipeline-local-only">Repository</a>
-			</div>
+<h1>Theme Gallery</h1>
 
-			<div class="footer">
-				<span>GitHub Pages will render this page once the repo Pages settings are enabled and the site is deployed.</span>
-			</div>
-		</section>
-	</main>
+
+<div class="gallery">
+
+
+    <div class="card">
+
+
+        <img src="/docs/themes/nolan-young-showcase-theme-x01/assets/images/screenshot.png" alt="Nolan Young Showcase Theme X01 Preview">
+
+
+        <div class="card-content">
+
+
+            <h2>Nolan Young Showcase Theme X01</h2>
+
+
+            <p>A premium, bright editorial/cinematic photography studio site with a highly interactive front page and a premium mega-header/navigation system.</p>
+
+
+            <a href="/docs/themes/nolan-young-showcase-theme-x01/index.html" class="btn btn-primary">Preview Theme</a>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- Add more theme cards here -->
+
+
+</div>
+
+
 </body>
+
+
 </html>
+
+
