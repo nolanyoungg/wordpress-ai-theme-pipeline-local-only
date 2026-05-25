@@ -7,7 +7,9 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
 function Get-WorkflowMode {
-	$mode = ($env:OLLAMA_WORKFLOW_MODE ?? "").Trim().ToLowerInvariant()
+	$mode = $env:OLLAMA_WORKFLOW_MODE
+	if ($null -eq $mode) { $mode = "" }
+	$mode = $mode.Trim().ToLowerInvariant()
 	if (-not $mode) { return "full" }
 	if ($mode -in @("full", "builder-only", "no-planner")) { return $mode }
 	Write-Die "Invalid OLLAMA_WORKFLOW_MODE='$mode'. Allowed: full, builder-only (alias: no-planner)."
@@ -139,7 +141,7 @@ try {
 } catch {
 	$validationFailed = $true
 	$validationError = $_.Exception.Message
-	Write-Warning "Validation failed for $THEME_SLUG: $validationError"
+	Write-Warning "Validation failed for ${THEME_SLUG}: $validationError"
 }
 
 Write-Output "Running Reviewer Agent via Ollama ($model)..."
