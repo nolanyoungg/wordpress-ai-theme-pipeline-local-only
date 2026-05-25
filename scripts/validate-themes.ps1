@@ -53,14 +53,14 @@ if (-not (Test-Path -LiteralPath (Join-Path $docsDir "index.html"))) { Write-Die
 
 $needsNodeBuild = $false
 try {
-	$themeEntrypoints = Get-ChildItem -LiteralPath $themesDir -Recurse -File -ErrorAction Stop |
-		Where-Object { $_.Name -match '^theme\.entry\.(js|jsx|ts|tsx)$' }
+	$themeEntrypoints = @(Get-ChildItem -LiteralPath $themesDir -Recurse -File -ErrorAction Stop |
+		Where-Object { $_.Name -match '^theme\.entry\.(js|jsx|ts|tsx)$' })
 	if ($themeEntrypoints.Count -gt 0) { $needsNodeBuild = $true }
 } catch { }
 
 try {
-	$previewEntrypoints = Get-ChildItem -LiteralPath (Join-Path $docsDir "themes") -Recurse -File -ErrorAction SilentlyContinue |
-		Where-Object { $_.Name -match '^preview\.entry\.(js|jsx|ts|tsx)$' }
+	$previewEntrypoints = @(Get-ChildItem -LiteralPath (Join-Path $docsDir "themes") -Recurse -File -ErrorAction SilentlyContinue |
+		Where-Object { $_.Name -match '^preview\.entry\.(js|jsx|ts|tsx)$' })
 	if ($previewEntrypoints.Count -gt 0) { $needsNodeBuild = $true }
 } catch { }
 
@@ -76,7 +76,7 @@ if ($needsNodeBuild) {
 	}
 }
 
-$themes = Get-ThemeSlugs -ThemesDir $themesDir
+$themes = @(Get-ThemeSlugs -ThemesDir $themesDir)
 if (-not $themes -or $themes.Count -eq 0) {
 	if ($ThemeSlug) {
 		Write-Die "Theme '$ThemeSlug' not found under $themesDir"

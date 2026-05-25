@@ -96,6 +96,12 @@ New-Item -ItemType Directory -Force $aiDir | Out-Null
 $keepFailed = Should-KeepFailedOutput
 $createdThemeFull = $null
 $createdPreviewFull = $null
+$createdZipFull = $null
+$docsIndexPath = Join-Path $root "docs/index.html"
+$docsIndexBefore = $null
+if (Test-Path -LiteralPath $docsIndexPath) {
+	$docsIndexBefore = Get-Content -LiteralPath $docsIndexPath -Raw
+}
 
 $model = "qwen2.5-coder:32b"
 if ($env:OLLAMA_MODEL) { $model = $env:OLLAMA_MODEL }
@@ -142,6 +148,7 @@ if ($latestVersion -ge 1) {
 
 $createdThemeFull = Join-Path $root $THEME_DIR
 $createdPreviewFull = Join-Path $root $PREVIEW_DIR
+$createdZipFull = Join-Path $root $THEME_ZIP
 
 try {
 	# Planner -> Builder -> Validate -> Reviewer -> optional Fixer -> Validate -> Zip
@@ -188,7 +195,11 @@ try {
 	if (-not $keepFailed) {
 		if ($createdThemeFull -and (Test-Path -LiteralPath $createdThemeFull)) { Remove-Item -LiteralPath $createdThemeFull -Recurse -Force -ErrorAction SilentlyContinue }
 		if ($createdPreviewFull -and (Test-Path -LiteralPath $createdPreviewFull)) { Remove-Item -LiteralPath $createdPreviewFull -Recurse -Force -ErrorAction SilentlyContinue }
-		Write-Warning "Workflow failed; cleaned up created theme/preview. Set OLLAMA_KEEP_FAILED_OUTPUT=1 to keep partial outputs."
+		if ($createdZipFull -and (Test-Path -LiteralPath $createdZipFull)) { Remove-Item -LiteralPath $createdZipFull -Force -ErrorAction SilentlyContinue }
+		if ($null -ne $docsIndexBefore) {
+			Set-Content -LiteralPath $docsIndexPath -Value $docsIndexBefore -Encoding UTF8 -NoNewline
+		}
+		Write-Warning "Workflow failed; cleaned up created theme/preview/zip and restored docs/index.html. Set OLLAMA_KEEP_FAILED_OUTPUT=1 to keep partial outputs."
 	}
 	throw
 }
