@@ -2,7 +2,7 @@
 
 ## Project purpose
 
-This repository builds, reviews, validates, packages, and publishes **versioned classic WordPress themes** through a controlled AI-assisted workflow run **locally** with Codex, plus GitHub Actions for validation/packaging and GitHub Pages for static previews.
+This repository builds, reviews, validates, packages, and publishes **versioned classic WordPress themes** through a controlled AI-assisted workflow run **locally** with Ollama, plus optional GitHub Actions for validation/packaging and GitHub Pages for static previews.
 
 ## Repository layout
 
@@ -22,7 +22,7 @@ This repository builds, reviews, validates, packages, and publishes **versioned 
 - GitHub Actions also uploads freshly-built zip artifacts for each theme as `theme-zips`.
 - Do not modify WordPress core files.
 - Do not commit uploads, cache files, backups, or environment files.
-- Local Codex prompts live in `.github/codex/prompts/`.
+- Local Ollama prompt templates live in `prompts/`.
 
 ## WordPress theme rules
 
@@ -48,24 +48,22 @@ This repository builds, reviews, validates, packages, and publishes **versioned 
 - Required gallery entry file: `docs/index.html`.
 - Required per-theme preview entry file: `docs/themes/<theme-slug>/index.html`.
 
-## Local Codex workflow rules
+## Local Ollama workflow rules
 
-- Use Codex signed into the ChatGPT account to run the planner, builder, and reviewer steps locally.
-- Do not assume or require an OpenAI API key.
-- Never create a workflow that requires `OPENAI_API_KEY`.
+- Use Ollama locally for the planner, builder, reviewer, and optional fixer steps.
+- The only allowed AI endpoint is `http://localhost:11434`.
+- Do not assume or require `OPENAI_API_KEY` or any cloud AI provider credentials.
 - Free build tooling such as `npm` is allowed; do not introduce paid AI API requirements.
 - Keep the npm dependency surface tiny; the current allowlist is `esbuild`, `react`, and `react-dom`.
 - CI runs `npm audit --audit-level=high`; fix or remove dependencies that trip it.
 - GitHub Actions are for validation, zip packaging, and Pages deployment only.
 - Keep AI-generated artifacts in `.ai/` until you are ready to commit them.
-- Do not push directly to `main`. Use a PR.
+- Branching/PRs are optional; use your preferred git workflow.
 
 ## AI workflow rules
 
 - Make the smallest safe change that satisfies the task.
 - Avoid unrelated refactors.
-- Do not push directly to `main`.
-- All work must go through a pull request.
 - Explain changed files clearly.
 - Include verification steps performed.
 - Flag any work that could not be completed.

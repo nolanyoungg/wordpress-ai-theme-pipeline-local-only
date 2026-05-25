@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "Deprecated in this local-only repo: this repository no longer uses Codex/OpenAI."
+echo "Use PowerShell + Ollama instead:"
+echo "  powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 \"<task>\""
+exit 1
+
 if [ "$#" -lt 1 ]; then
   echo "Usage: $0 <task>"
   exit 1
