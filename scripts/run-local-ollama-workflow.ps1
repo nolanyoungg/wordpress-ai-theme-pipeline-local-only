@@ -6,6 +6,13 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
+function Get-WorkflowMode {
+	$mode = ($env:OLLAMA_WORKFLOW_MODE ?? "").Trim().ToLowerInvariant()
+	if (-not $mode) { return "full" }
+	if ($mode -in @("full", "builder-only", "no-planner")) { return $mode }
+	Write-Die "Invalid OLLAMA_WORKFLOW_MODE='$mode'. Allowed: full, builder-only (alias: no-planner)."
+}
+
 function Write-Die([string]$Message) {
 	Write-Error $Message
 	exit 1
@@ -86,6 +93,9 @@ Ensure-Ollama -BaseUri $baseUri -Model $model
 $themesDir = Join-Path $root "wp-content/themes"
 $docsThemesDir = Join-Path $root "docs/themes"
 
+$workflowMode = Get-WorkflowMode
+if ($workflowMode -eq "no-planner") { $workflowMode = "builder-only" }
+
 $latestVersion = Get-LatestThemeVersion -ThemesDir $themesDir
 if ($latestVersion -lt 1) { Write-Die "No existing numbered themes found to copy as a starter." }
 
@@ -111,8 +121,12 @@ Copy-Starter -Src (Join-Path $root $latestPreviewDir) -Dst (Join-Path $root $PRE
 Replace-ObviousVersionRefs -Root $root -OldSlug $latestSlug -NewSlug $THEME_SLUG -OldDisplay ("Nolan Showcase Theme X$latestVersion") -NewDisplay $THEME_DISPLAY_NAME
 
 # Planner -> Builder -> Validate -> Reviewer -> optional Fixer -> Validate -> Zip
-Write-Output "Running Planner Agent via Ollama ($model)..."
-& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "planner" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
+if ($workflowMode -eq "full") {
+	Write-Output "Running Planner Agent via Ollama ($model)..."
+	& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "planner" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
+} else {
+	Write-Output "Skipping Planner Agent (OLLAMA_WORKFLOW_MODE=$workflowMode)."
+}
 
 Write-Output "Running Builder Agent via Ollama ($model)..."
 & (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "builder" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
