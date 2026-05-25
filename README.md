@@ -38,7 +38,7 @@ Never overwrite older versions.
 
 ## Create the next theme version (Windows + Ollama)
 
-See [README-LOCAL-ONLY.md](README-LOCAL-ONLY.md) for prerequisites, setup commands, and the exact PowerShell command to run the workflow.
+See [README-LOCAL-ONLY.md](README-LOCAL-ONLY.md) for prerequisites, setup commands, and the exact PowerShell commands to run the workflow and open a PR.
 
 ## Optional: React components (build step)
 
@@ -78,8 +78,9 @@ To enable Pages:
 1. Repo Settings -> Pages
 2. Source: GitHub Actions
 
+If the site is showing a 404, confirm Pages is enabled and then run the GitHub Actions workflow `Validate, Package, and Publish Previews` with `workflow_dispatch` once to publish `docs/`.
+
 ## Notes
 
 - The active local-only workflow is PowerShell + Ollama (`scripts/run-local-ollama-workflow.ps1`).
 - The legacy Codex helper (`scripts/run-local-workflow.sh`) and `.github/codex/` prompts may exist for historical reference, but are not used by the local-only workflow.
-

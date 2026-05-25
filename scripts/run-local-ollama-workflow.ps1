@@ -15,6 +15,13 @@ function Get-WorkflowMode {
 	Write-Die "Invalid OLLAMA_WORKFLOW_MODE='$mode'. Allowed: full, builder-only (alias: no-planner)."
 }
 
+function Should-KeepFailedOutput {
+	$v = $env:OLLAMA_KEEP_FAILED_OUTPUT
+	if ($null -eq $v) { return $false }
+	$v = $v.Trim().ToLowerInvariant()
+	return ($v -in @("1", "true", "yes", "y", "on"))
+}
+
 function Write-Die([string]$Message) {
 	Write-Error $Message
 	exit 1
@@ -86,6 +93,10 @@ $root = Get-RepoRoot
 $aiDir = Join-Path $root ".ai"
 New-Item -ItemType Directory -Force $aiDir | Out-Null
 
+$keepFailed = Should-KeepFailedOutput
+$createdThemeFull = $null
+$createdPreviewFull = $null
+
 $model = "qwen2.5-coder:32b"
 if ($env:OLLAMA_MODEL) { $model = $env:OLLAMA_MODEL }
 
@@ -120,47 +131,59 @@ $latestPreviewDir = "docs/themes/$latestSlug"
 Copy-Starter -Src (Join-Path $root $latestThemeDir) -Dst (Join-Path $root $THEME_DIR)
 Copy-Starter -Src (Join-Path $root $latestPreviewDir) -Dst (Join-Path $root $PREVIEW_DIR)
 
+$createdThemeFull = Join-Path $root $THEME_DIR
+$createdPreviewFull = Join-Path $root $PREVIEW_DIR
+
 Replace-ObviousVersionRefs -Root $root -OldSlug $latestSlug -NewSlug $THEME_SLUG -OldDisplay ("Nolan Showcase Theme X$latestVersion") -NewDisplay $THEME_DISPLAY_NAME
 
-# Planner -> Builder -> Validate -> Reviewer -> optional Fixer -> Validate -> Zip
-if ($workflowMode -eq "full") {
-	Write-Output "Running Planner Agent via Ollama ($model)..."
-	& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "planner" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
-} else {
-	Write-Output "Skipping Planner Agent (OLLAMA_WORKFLOW_MODE=$workflowMode)."
-}
-
-Write-Output "Running Builder Agent via Ollama ($model)..."
-& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "builder" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
-
-Write-Output "Running local validation..."
-$validationFailed = $false
-$validationError = ""
 try {
-	& (Join-Path $PSScriptRoot "validate-themes.ps1") -ThemeSlug $THEME_SLUG
-} catch {
-	$validationFailed = $true
-	$validationError = $_.Exception.Message
-	Write-Warning "Validation failed for ${THEME_SLUG}: $validationError"
-}
-
-Write-Output "Running Reviewer Agent via Ollama ($model)..."
-$reviewOutPath = & (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "reviewer" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir
-
-$reviewText = Get-Content -LiteralPath $reviewOutPath -Raw
-$needsFix = $false
-if ($reviewText -match '(?im)\b(critical|must fix|blocker|fails validation|error)\b') { $needsFix = $true }
-
-if ($validationFailed -or $needsFix) {
-	Write-Output "Reviewer indicates fixes are needed. Running Fixer Agent via Ollama ($model)..."
-	$fixTask = $UserTask + "`n`nReviewer report:`n" + $reviewText
-	if ($validationFailed) {
-		$fixTask += "`n`nValidation failure:`n" + $validationError
+	# Planner -> Builder -> Validate -> Reviewer -> optional Fixer -> Validate -> Zip
+	if ($workflowMode -eq "full") {
+		Write-Output "Running Planner Agent via Ollama ($model)..."
+		& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "planner" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
+	} else {
+		Write-Output "Skipping Planner Agent (OLLAMA_WORKFLOW_MODE=$workflowMode)."
 	}
-	& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "fixer" -UserTask $fixTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
 
-	Write-Output "Running validation again..."
-	& (Join-Path $PSScriptRoot "validate-themes.ps1") -ThemeSlug $THEME_SLUG
+	Write-Output "Running Builder Agent via Ollama ($model)..."
+	& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "builder" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
+
+	Write-Output "Running local validation..."
+	$validationFailed = $false
+	$validationError = ""
+	try {
+		& (Join-Path $PSScriptRoot "validate-themes.ps1") -ThemeSlug $THEME_SLUG
+	} catch {
+		$validationFailed = $true
+		$validationError = $_.Exception.Message
+		Write-Warning "Validation failed for ${THEME_SLUG}: $validationError"
+	}
+
+	Write-Output "Running Reviewer Agent via Ollama ($model)..."
+	$reviewOutPath = & (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "reviewer" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir
+
+	$reviewText = Get-Content -LiteralPath $reviewOutPath -Raw
+	$needsFix = $false
+	if ($reviewText -match '(?im)\b(critical|must fix|blocker|fails validation|error)\b') { $needsFix = $true }
+
+	if ($validationFailed -or $needsFix) {
+		Write-Output "Reviewer indicates fixes are needed. Running Fixer Agent via Ollama ($model)..."
+		$fixTask = $UserTask + "`n`nReviewer report:`n" + $reviewText
+		if ($validationFailed) {
+			$fixTask += "`n`nValidation failure:`n" + $validationError
+		}
+		& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "fixer" -UserTask $fixTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
+
+		Write-Output "Running validation again..."
+		& (Join-Path $PSScriptRoot "validate-themes.ps1") -ThemeSlug $THEME_SLUG
+	}
+} catch {
+	if (-not $keepFailed) {
+		if ($createdThemeFull -and (Test-Path -LiteralPath $createdThemeFull)) { Remove-Item -LiteralPath $createdThemeFull -Recurse -Force -ErrorAction SilentlyContinue }
+		if ($createdPreviewFull -and (Test-Path -LiteralPath $createdPreviewFull)) { Remove-Item -LiteralPath $createdPreviewFull -Recurse -Force -ErrorAction SilentlyContinue }
+		Write-Warning "Workflow failed; cleaned up created theme/preview. Set OLLAMA_KEEP_FAILED_OUTPUT=1 to keep partial outputs."
+	}
+	throw
 }
 
 Write-Output ""

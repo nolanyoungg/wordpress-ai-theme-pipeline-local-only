@@ -39,6 +39,26 @@ $env:OLLAMA_MODEL="qwen2.5-coder:32b"
 powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "Create the next versioned WordPress theme for a premium AI automation and web development company. Make it visually impressive, highly interactive, mobile-first, accessible, and include the matching static preview."
 ```
 
+### Skip the Planner (optional)
+
+The default workflow runs Planner -> Builder -> Validate -> Reviewer -> (optional) Fixer -> Validate.
+
+To skip the Planner and go straight to Builder:
+
+```powershell
+$env:OLLAMA_WORKFLOW_MODE="builder-only"
+```
+
+### Keep failed outputs (optional)
+
+By default, if the workflow fails mid-run, it deletes the newly created theme/preview folders to avoid leaving half-finished versions around.
+
+To keep partial outputs for debugging:
+
+```powershell
+$env:OLLAMA_KEEP_FAILED_OUTPUT="1"
+```
+
 ## Validate (themes + previews + zip)
 
 ```powershell
@@ -59,6 +79,38 @@ Optional push command:
 git push
 ```
 
+## PR workflow (recommended)
+
+1. Create a branch:
+
+```powershell
+git checkout -b feature/theme-xN
+```
+
+2. Run the workflow to generate the next versioned theme:
+
+```powershell
+$env:OLLAMA_MODEL="qwen2.5-coder:32b"
+powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "YOUR THEME TASK HERE"
+```
+
+3. Validate:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/validate-themes.ps1
+```
+
+4. Commit and push:
+
+```powershell
+git status
+git add -A
+git commit -m "Add Nolan Showcase Theme XN (Ollama local-only)"
+git push -u origin HEAD
+```
+
+5. Open a Pull Request on GitHub from your pushed branch into `main`.
+
 ## How the Ollama agent flow works
 
 The local workflow entrypoint is `scripts/run-local-ollama-workflow.ps1`:
@@ -71,4 +123,3 @@ The local workflow entrypoint is `scripts/run-local-ollama-workflow.ps1`:
 6. Runs the Reviewer Agent (Ollama) to spot issues.
 7. If needed, runs the Fixer Agent (Ollama) to make targeted repairs via file blocks.
 8. Validates again and rebuilds the theme ZIP.
-
