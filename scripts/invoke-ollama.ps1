@@ -56,7 +56,26 @@ if ($outDir) { New-Item -ItemType Directory -Force $outDir | Out-Null }
 try {
 	$resp = Invoke-RestMethod -Method Post -Uri "$baseUri/api/generate" -ContentType "application/json" -Body $body -TimeoutSec 3600
 } catch {
-	Write-Die "Failed calling Ollama generate endpoint at $baseUri/api/generate. Underlying error: $($_.Exception.Message)"
+	$details = $_.Exception.Message
+	$respBody = ""
+	try {
+		if ($_.Exception.Response -and $_.Exception.Response.GetResponseStream) {
+			$stream = $_.Exception.Response.GetResponseStream()
+			if ($stream) {
+				$reader = New-Object System.IO.StreamReader($stream)
+				$respBody = $reader.ReadToEnd()
+			}
+		}
+	} catch { }
+
+	if ($respBody) {
+		$rawStamp = Get-Date -Format "yyyyMMdd-HHmmss"
+		$errPath = Join-Path $aiDir ("ollama-generate-error-$rawStamp.txt")
+		$respBody | Set-Content -Encoding UTF8 -Path $errPath
+		Write-Die "Failed calling Ollama generate endpoint at $baseUri/api/generate. HTTP error. Details: $details. Response body saved to: $errPath"
+	}
+
+	Write-Die "Failed calling Ollama generate endpoint at $baseUri/api/generate. Underlying error: $details"
 }
 
 $rawStamp = Get-Date -Format "yyyyMMdd-HHmmss"
