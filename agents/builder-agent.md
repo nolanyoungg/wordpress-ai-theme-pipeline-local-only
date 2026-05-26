@@ -110,3 +110,42 @@ Context:
 Now output ONLY file blocks.
 
 
+## Final Output Contract
+
+Your final answer must contain file blocks only.
+
+The first non-empty line of your final answer must be a file block header like:
+
+---FILE: wp-content/themes/{{THEME_SLUG}}/style.css---
+
+Do not output JSON.
+
+Do not output markdown fences.
+
+Do not output explanations.
+
+Do not output summaries.
+
+Do not output comments outside file contents.
+
+Do not output partial snippets.
+
+Do not output only CSS, only JavaScript, or only one file.
+
+Every generated file must use this exact format:
+
+---FILE: relative/path/from/repo/root---
+full file contents
+---END FILE---
+
+Required output paths must stay inside:
+
+- wp-content/themes/{{THEME_SLUG}}/
+- docs/themes/{{THEME_SLUG}}/
+- docs/index.html
+- .ai/
+
+You must generate the complete WordPress theme, the complete static preview, and the docs gallery update.
+
+At minimum, include file blocks for the required theme files, preview files, and docs/index.html.
+

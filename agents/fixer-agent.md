@@ -53,3 +53,31 @@ Context:
 Now output ONLY file blocks.
 
 
+## Final Output Contract
+
+Your final answer must contain file blocks only.
+
+The first non-empty line of your final answer must be a file block header like:
+
+---FILE: wp-content/themes/{{THEME_SLUG}}/style.css---
+
+Do not output JSON.
+
+Do not output markdown fences.
+
+Do not output explanations.
+
+Do not output summaries.
+
+Do not output comments outside file contents.
+
+Do not output partial snippets.
+
+Every generated or repaired file must use this exact format:
+
+---FILE: relative/path/from/repo/root---
+full file contents
+---END FILE---
+
+Only write files inside allowed generated output paths.
+

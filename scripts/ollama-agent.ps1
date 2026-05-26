@@ -58,7 +58,14 @@ function Truncate([string]$Text, [int]$MaxChars) {
 	return ($Text.Substring(0, $MaxChars) + "`n...[truncated]...")
 }
 
-function Build-LatestContext([string]$Root, [string]$ThemeSlug, [string]$ThemeDir, [string]$PreviewDir) {
+function Build-LatestContext([string]$Root, [string]$ThemeSlug, [string]$ThemeDir, [string]$PreviewDir) {
+$disableLatestContext = $env:OLLAMA_DISABLE_LATEST_CONTEXT
+if ($disableLatestContext) {
+$disableLatestContext = $disableLatestContext.Trim().ToLowerInvariant()
+if ($disableLatestContext -in @("1", "true", "yes", "y", "on")) {
+return ""
+}
+}
 	if (-not $ThemeSlug -or -not $ThemeDir -or -not $PreviewDir) { return "" }
 
 	$parts = @()
@@ -248,4 +255,5 @@ if ($Agent -in @("builder", "fixer")) {
 } else {
 	Write-Output $resultOut
 }
+
 
