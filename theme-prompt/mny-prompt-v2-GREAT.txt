@@ -1,0 +1,1031 @@
+﻿========================================
+TASK (X02)
+========================================
+
+Create the next versioned classic WordPress theme in this repo:
+- Theme: wp-content/themes/nolan-young-showcase-theme-x02/
+- Static preview: docs/themes/nolan-young-showcase-theme-x02/
+- Update docs/index.html with a new card linking to themes/nolan-young-showcase-theme-x02/index.html
+
+Local-only Ollama workflow. No cloud AI. No OPENAI_API_KEY. No remote CDNs, fonts, images, icons, or paid services.
+Use local assets only (CSS/JS in the theme and static preview; inline SVG allowed).
+
+Primary site type: premium photography studio website (portfolio + services + booking inquiry), bright editorial style.
+
+========================================
+HEADER + NAV SYSTEM (DESKTOP + MOBILE)
+========================================
+
+Build a premium, production-grade header/navigation system with a solid `nolan-menu` header-menu interaction. This header must be fully designed, fully implemented, and pixel-polished for both desktop and mobile. The static preview must mirror the WordPress theme behavior exactly.
+
+A) Header Layout (Desktop)
+- Sticky header that becomes a "scrolled" variant after the user scrolls down.
+  - On top: slightly taller padding, more airy.
+  - Scrolled: slightly tighter padding, solid warm background, crisp border/shadow.
+  - Must not cause layout shift.
+- Structure (left -> center -> right):
+  1) Logo block (left)
+     - Mark + wordmark.
+     - Mark can be inline SVG.
+     - Wordmark is typographic, editorial, and premium.
+     - Clicking logo goes to / (home).
+  2) Primary nav (center)
+     - Desktop nav items must be exactly:
+       - What We Do
+       - Who We Are
+       - Work
+       - Resources
+       - Contact
+     - What We Do is a button trigger that opens the `nolan-menu` panel for services.
+     - Who We Are is a button trigger that opens the `nolan-menu` panel for studio/about content.
+     - Resources is a button trigger that opens the `nolan-menu` panel for resources.
+     - Work is a direct link to /work/.
+     - Contact is a direct link to /contact/ and should also be represented by the header CTA.
+     - Keep the primary nav readable, balanced, and visually calm.
+  3) CTA area (right)
+     - Primary CTA button text: Contact Us.
+     - Primary CTA URL: /contact/.
+     - CTA must be visible on desktop.
+     - CTA should use .btn .btn-header-cta and feel like the strongest header action without overpowering the nav.
+     - CTA should also be available in the mobile drawer as a full-width button.
+
+B) Header Functionality (Desktop)
+- Open and close `nolan-menu` panels on click.
+- Hover-open is allowed and should be implemented as the user hovers over the drop-down menu options only if it is robust and does not break mobile or keyboard behavior.
+- Only one panel may be open at a time.
+- Opening a different panel closes the current panel.
+- Clicking the same trigger again closes that panel.
+- Clicking outside the open panel closes it.
+- Pressing Escape closes the open panel.
+- When a panel is open, show a full-page backdrop.
+- When a panel is open, lock body scroll.
+- All trigger buttons must maintain accurate aria-expanded values.
+- Trigger buttons must use aria-controls where appropriate.
+- Panels must be hidden from assistive technology when closed (use hidden, aria-hidden, or equivalent state management correctly).
+- Focus-visible states must be strong and obvious.
+- No keyboard traps.
+- No console errors.
+- Panels must be SOLID and readable (warm white/ivory background, border, shadow, stable z-index). No transparency.
+- Panel layout: left rail (list of category buttons) + right content area with multiple sections.
+- Right content MUST update on rail hover AND rail keyboard focus (Tab navigation). Keyboard focus behavior is required, not optional. This is the signature interaction.
+
+C) Required Desktop Data Attributes (Follow Exactly)
+- button[data-menu-item="what-we-do"] controls div[data-menu-dropdown="what-we-do"]
+- button[data-menu-item="who-we-are"] controls div[data-menu-dropdown="who-we-are"]
+- button[data-menu-item="resources"] controls div[data-menu-dropdown="resources"]
+- Trigger buttons should use aria-controls to reference the matching panel ID.
+- Trigger buttons should update aria-expanded when panels open/close.
+
+Inside each open header panel:
+- Left rail buttons: button[data-rail-item="<key>"]
+- Right sections: section[data-rail-content="<key>"]
+- Only one matching right-side section visible at a time.
+- Closed/inactive right-side sections should not expose hidden focusable controls to keyboard users.
+
+D) Nolan-Menu Panel Structure (Desktop header Panels)
+- Each desktop header panel must be solid, readable, and premium.
+- Use a warm white or ivory background.
+- No transparent panels.
+- No glassmorphism that hurts readability.
+- Use a border, soft shadow, stable z-index, and clean spacing.
+- Panel should sit below the header and feel connected to it.
+- Panel layout must use a left rail and right content area for What We Do and Who We Are.
+- Left rail contains category buttons.
+- Right content area contains matching content sections.
+- The right content must update on left rail hover and on left rail keyboard focus.
+- Only one right-side content section should be visible at a time.
+- Resources may use a resource-card grid, but it must still be a solid premium `nolan-menu` panel controlled by the required data attributes.
+
+E) Panel Content Requirements
+
+1) What We Do `nolan-menu` panel
+- Left rail items (exact labels):
+  - Portrait Sessions
+  - Weddings & Engagements
+  - Events & Celebrations
+  - Brand Photography
+  - Product & Detail Photography
+  - Lifestyle & Family Sessions
+
+- Right side per rail item MUST include:
+  - Local photo
+  - Premium title
+  - Short editorial description
+  - 3 to 5 bullet details
+  - CTA linking to /what-we-do/
+
+2) Who We Are `nolan-menu` panel
+- Left rail items:
+  - The Studio
+  - Our Approach
+  - The Client Experience
+
+- Right side per rail item MUST include:
+  - Local photo
+  - Headline
+  - Values list or short feature list
+  - CTA linking to /who-we-are/
+
+3) Resources `nolan-menu` panel
+- Use a grid of at least 4 resource cards.
+- Each card must include a local photo, tag, title, excerpt, and link to /resources/.
+- Cards should feel editorial and useful, not generic filler.
+
+F) Mobile Header and Drawer
+- Build a dedicated mobile drawer, not a stacked version of the desktop `nolan-menu` panel.
+- Include an open button and close button.
+- Drawer opens on click.
+- Drawer closes from close button, backdrop click, outside click, and Escape.
+- aria-expanded must update accurately.
+- Body scroll must lock while the drawer is open.
+- Use accordion sections for What We Do, Who We Are, and Resources.
+- Work and Contact are direct links.
+- Include a full-width Book a Session CTA.
+- Also include Contact Us as a clear full-width mobile drawer CTA linking to /contact/ if the design supports both CTA labels.
+- Mobile drawer must have a solid readable background.
+- Mobile drawer must feel just as impressive as desktop.
+- No keyboard traps.
+- No hidden focusable links inside closed accordions.
+- Mobile layout must be clean on small screens and tablets.
+
+G) Button Classes (Use These)
+- .btn
+- .btn-primary
+- .btn-secondary
+- .btn-header-cta
+- .btn-small
+- .btn-full
+- .btn-text
+
+All buttons must be properly styled and consistent.
+Keep button styles in scss/components/_buttons.scss.
+
+H) Header JavaScript Requirements
+In assets/js/theme.js (and mirrored in docs preview.js):
+- Desktop `nolan-menu` panel open/close behavior.
+- One panel open at a time.
+- Same trigger toggles closed.
+- Outside click closes active panel.
+- Escape closes active panel.
+- Backdrop creation/toggling.
+- Body scroll lock when menu or drawer is open.
+- aria-expanded updates.
+- aria-hidden or equivalent hidden state management for panels.
+- Rail hover switching.
+- Rail keyboard-focus switching.
+- Mobile drawer open/close.
+- Mobile accordion behavior.
+- Sticky/scrolled header class.
+- Optional smooth scroll for same-page anchors.
+- Optional scroll reveal, respecting prefers-reduced-motion.
+- No console errors.
+- No external libraries.
+
+I) Header CSS Guidelines
+- Put header styles in scss/layout/_header.scss.
+- Keep button styles in scss/components/_buttons.scss.
+- Use clean variables from scss/abstracts/_variables.scss.
+- Use mixins from scss/abstracts/_mixins.scss where useful.
+- Bright editorial palette (warm whites/ivories + champagne accents + charcoal text).
+- Header must use stable z-index layers.
+- `nolan-menu` panels must be visually solid with no bleed-through.
+- Backdrop must cover the page under the header/menu system.
+- Left rail should have a consistent subtle tint.
+- Active rail item should be obvious.
+- Hover, focus, and active states must be designed.
+- Use strong focus-visible outlines.
+- Use responsive breakpoints consistently.
+- Prevent layout shift and horizontal overflow.
+- Respect prefers-reduced-motion.
+========================================
+THEME STRUCTURE (STYLES ORGANIZATION)
+========================================
+
+Organize the theme like a serious, modern WordPress product theme, not a quick demo. The structure should feel similar in discipline to a polished premium theme or modern SaaS build: predictable folders, reusable template parts, consistent CSS architecture, and no one-off styling scattered everywhere.
+
+The workflow ultimately must output required runtime files, especially:
+- assets/css/theme.css
+- assets/js/theme.js
+
+SCSS files should be included as source organization, and the final compiled/combined styling must exist in assets/css/theme.css. No external build tooling is required; if Sass is not actually compiled during the workflow, output the complete final CSS into assets/css/theme.css and keep the SCSS files as organized source references.
+
+Required theme structure guideline:
+
+wp-content/themes/THEMENAME/
+  style.css
+  functions.php
+  header.php
+  footer.php
+  front-page.php
+  index.php
+  page.php
+  single.php
+  archive.php
+  search.php
+  404.php
+  comments.php
+  README.md
+
+  assets/
+    css/theme.css
+    js/theme.js
+    images/
+      hero/
+      portfolio/
+      services/
+      resources/
+      team/
+      texture/
+
+  scss/
+    main.scss
+    abstracts/_variables.scss
+    abstracts/_mixins.scss
+    abstracts/_functions.scss
+    base/_reset.scss
+    base/_typography.scss
+    base/_accessibility.scss
+    base/_forms.scss
+    components/_buttons.scss
+    components/_cards.scss
+    components/_forms.scss
+    components/_badges.scss
+    components/_accordion.scss
+    components/_carousel.scss
+    components/_portfolio-filter.scss
+    components/_before-after.scss
+    layout/_container.scss
+    layout/_header.scss
+    layout/_footer.scss
+    layout/_grid.scss
+    layout/_sections.scss
+    pages/_home.scss
+    pages/_contact.scss
+    pages/_services.scss
+    pages/_work.scss
+    pages/_resources.scss
+    pages/_who-we-are.scss
+
+  template-parts/
+    content-hero.php
+    content-brand-statement.php
+    content-featured-work.php
+    content-services.php
+    content-process.php
+    content-style-pillars.php
+    content-testimonials.php
+    content-resources-preview.php
+    content-final-cta.php
+    content-footer-widgets.php
+    content-none.php
+    content-page.php
+    content-single.php
+
+  page-templates/
+    template-who-we-are.php
+    template-what-we-do.php
+    template-work.php
+    template-resources.php
+    template-contact.php
+
+Static preview structure should mirror the theme assets closely:
+
+docs/themes/THEMENAME/
+  index.html
+  assets/css/preview.css
+  assets/js/preview.js
+  assets/images/
+    hero/
+    portfolio/
+    services/
+    resources/
+    team/
+    texture/
+
+Architecture checklist:
+- Use reusable template parts for major homepage sections instead of placing everything in one massive front-page.php.
+- Keep header markup in header.php and mobile/desktop menu markup organized and readable.
+- Keep footer markup in footer.php plus content-footer-widgets.php.
+- Put shared UI patterns in template-parts where practical.
+- Page templates must be designed pages with complete markup, not just calls to the_content().
+- Forms should use accessible labels, clear grouping, and obvious focus states.
+- Images must have useful alt text or empty alt text only when decorative.
+- Asset paths must use proper WordPress functions in PHP (get_template_directory_uri, esc_url, etc.).
+- Static preview paths must be relative and must not point at wp-content.
+
+CSS/SCSS checklist:
+- _variables.scss defines colors, spacing scale, breakpoints, shadows, typography sizes, z-index layers, and container widths.
+- _mixins.scss includes reusable media queries, focus styles, container helpers, visually-hidden helper, and reduced-motion helpers.
+- _reset.scss normalizes base element behavior without destroying accessibility.
+- _typography.scss defines heading/body styles, link styles, text rhythm, and responsive type behavior.
+- _accessibility.scss includes skip link, focus-visible, reduced motion, and screen-reader utilities.
+- _buttons.scss defines all required button classes: .btn, .btn-primary, .btn-secondary, .btn-header-cta, .btn-small, .btn-full, .btn-text.
+- _header.scss contains the complete desktop header, nolan-menu, backdrop, mobile drawer, and accordion styles.
+- _cards.scss handles portfolio/service/testimonial/resource card patterns.
+- _forms.scss handles contact form layout, fields, errors/help text, and button alignment.
+- Use consistent naming (BEM-style or clean utility/component naming), not random one-off class names.
+- Avoid CSS that depends on exact content length; layouts must handle longer labels.
+- No horizontal overflow on mobile.
+- No transparent mega panels.
+- No unreadable overlays.
+
+JavaScript organization checklist:
+- assets/js/theme.js should be modular enough to read, even if it is one file.
+- Separate logic into clear blocks/functions:
+  - initHeaderMenu()
+  - initMobileDrawer()
+  - initRailPanels()
+  - initPortfolioFilter()
+  - initCarousel()
+  - initBeforeAfter()
+  - initTestimonials()
+  - initScrollReveal()
+- All features must safely no-op if markup is missing.
+- No external libraries.
+- No console errors.
+- Respect prefers-reduced-motion.
+
+Quality bar:
+- The file structure should look like a real theme someone could maintain.
+- The CSS should be cohesive enough that future versions can evolve without copying entire files.
+- The static preview must not be an afterthought; it should share the same design decisions and interactions as the WP homepage.
+- The output should feel like a complete photography website system, not only a landing page.
+========================================
+COLOR + LIGHT/DARK BALANCE
+========================================
+
+Use mostly light backgrounds with selective dark contrast sections.
+
+Suggested color palette:
+- Warm white: #fffaf3
+- Soft ivory: #f7f1e7
+- Clean white: #ffffff
+- Light sand: #eadfce
+- Warm beige: #d8c4a4
+- Champagne gold: #b99558
+- Soft taupe: #8f7a61
+- Muted clay: #b66f4f
+- Charcoal text: #1f1c18
+- Soft black: #11100d
+
+Use white backgrounds for most sections.
+Use darker colors mainly for:
+- footer
+- selected CTA sections
+- strong text contrast
+- occasional editorial split sections
+
+The site should not feel overly dark or black-background dominant.
+
+========================================
+IMAGE / PHOTO REQUIREMENTS
+========================================
+
+Use real, high-quality, copyright-safe sample photography instead of generic filler images.
+
+Use only images that are safe for demo/theme use, such as:
+- royalty-free photography
+- permissive-use sample photography
+- locally stored image assets
+- properly named local files
+
+Do not use:
+- copyrighted client photos
+- celebrity photos
+- random Google images
+- watermarked stock photos
+- blurry placeholders
+- generic gray boxes
+- fake image placeholders where real demo imagery would improve the design
+
+The sample photography should match the MNY Photo style:
+- bright editorial portraits
+- soft wedding/couple moments
+- clean brand photography
+- modern event coverage
+- product/detail photography
+- lifestyle/family imagery
+- studio/editorial compositions
+
+All images used by the theme must be stored locally inside:
+- wp-content/themes/THEMENAME/assets/images/
+
+Also copy required preview images into:
+- docs/themes/THEMENAME/assets/images/
+
+SVG graphics may still be used for:
+- logo marks
+- icons
+- subtle decorative accents
+- separators
+- abstract editorial overlays
+
+But portfolio, hero sections, service cards, and featured visuals should primarily use real sample photography.
+
+========================================
+INTERACTIVE FRONT PAGE (FEEL “ALIVE”)
+========================================
+
+front-page.php must feel “alive”, while still usable with JS disabled:
+
+Implement multiple lightweight premium interactions using vanilla JS:
+1) Featured Work filter: category chips that filter a grid (animated, accessible, keyboard-usable).
+2) Spotlight carousel/slider for 3 featured stories (buttons required; ARIA-friendly).
+3) Before/After reveal using a slider input; include reduced-motion safe fallback.
+4) Testimonials rotator (buttons + pause on focus/hover; no auto-advance if prefers-reduced-motion).
+5) Scroll reveal for sections (subtle; off by default if prefers-reduced-motion).
+6) Optional count-up stats (only if it does not feel gimmicky; must not shift layout).
+
+========================================
+PAGES (REAL MULTI-PAGE SITE)
+========================================
+
+Create real page templates (not just the_content()) under:
+- page-templates/template-who-we-are.php
+- page-templates/template-what-we-do.php
+- page-templates/template-work.php
+- page-templates/template-resources.php
+- page-templates/template-contact.php
+
+Each must include a valid WordPress Template Name header.
+Each page must be filled with polished, designed markup and content.
+Do not create blank templates.
+Do not create pages that only call the_content().
+
+Main page URLs (navigation uses these):
+- /who-we-are/
+- /what-we-do/
+- /work/
+- /resources/
+- /contact/
+
+Work page requirements:
+- At least 12 portfolio cards with local images
+
+Contact page requirements:
+- Styled inquiry form UI (no external service), accessible labels
+- Form fields:
+  - Name
+  - Email
+  - Phone Number
+  - Preferred Date or Timeframe
+  - Location
+  - Message
+- Ensure these forms can be sent to the site owner via email/wp setup (use standard WordPress form handling patterns or mailto fallback if needed).
+
+========================================
+EXPANDED PAGE TEMPLATE REQUIREMENTS (ADD THIS TO THE BOTTOM)
+========================================
+
+Every page template must feel like a real, premium page in a complete photography website system. Do not make these pages feel like secondary leftovers after the homepage. Each page should have a unique layout rhythm, its own strong visual moment, and a clear business purpose.
+
+Global page requirements:
+- Every page template must include a valid WordPress Template Name header.
+- Every page must use polished designed markup, not only the_content().
+- Every page must include local photography assets from assets/images/.
+- Every page must include strong section hierarchy, real copy, and conversion-focused CTAs.
+- Each page must look related to the same brand, but not identical to the homepage or each other.
+- Each page should include at least one lightweight interactive element where appropriate.
+- Each page must work without JavaScript, with JS enhancing the experience.
+- Each page must be mobile-first, accessible, and visually refined.
+- Avoid generic filler copy. Use confident, premium, believable photography studio language.
+
+========================================
+PAGE TEMPLATE: WHO WE ARE
+File: page-templates/template-who-we-are.php
+URL: /who-we-are/
+========================================
+
+Purpose:
+Convince visitors that MNY Photo is trustworthy, refined, human, experienced, and capable of handling important personal and brand moments.
+
+Required sections:
+1) Page hero
+- Editorial headline about the studio's point of view.
+- Warm supporting copy focused on trust, direction, taste, and experience.
+- Local portrait/studio image or layered editorial image composition.
+- CTA to /contact/ and secondary CTA to /work/.
+
+2) Studio story
+- Explain the studio's mission and why its photography feels premium.
+- Use a split editorial layout with image + text.
+- Include a short founder/studio note with a signature-style detail.
+
+3) Values section
+- 4 to 6 values such as: calm direction, thoughtful planning, cinematic light, careful editing, honest moments, print-ready delivery.
+- Cards should not be generic; each value should include a short practical explanation.
+
+4) Approach section
+- Explain how sessions are guided: planning, mood, light, location, posing, editing.
+- Include a visual timeline or process rail.
+- Interactive idea: hover/focus cards reveal extra details.
+
+5) Client experience
+- Explain what clients can expect before, during, and after a shoot.
+- Include reassurance for non-models, busy families, businesses, and event hosts.
+- Include trust badges or proof points.
+
+6) Editing philosophy
+- Explain the look: warm, polished, editorial, not overprocessed.
+- Include a before/after-style content block or static comparison.
+
+7) CTA
+- Strong final CTA to /contact/ with the message: start planning a session.
+
+Visual direction:
+- Elegant, warm, personal, editorial.
+- Use more intimate photography and softer section pacing than the Work page.
+- Should feel credible and human, not corporate.
+
+========================================
+PAGE TEMPLATE: WHAT WE DO
+File: page-templates/template-what-we-do.php
+URL: /what-we-do/
+========================================
+
+Purpose:
+Clearly explain every service and help visitors choose the right session type.
+
+Required sections:
+1) Page hero
+- Clear headline about photography services for people, brands, and meaningful events.
+- CTA to /contact/ and secondary CTA to /work/.
+- Local image collage showing multiple service categories.
+
+2) Service overview grid
+Include polished cards for:
+- Portrait Sessions
+- Weddings & Engagements
+- Events & Celebrations
+- Brand Photography
+- Product & Detail Photography
+- Lifestyle & Family Sessions
+
+Each card must include:
+- Local image
+- Service title
+- Premium short description
+- Best-for list
+- CTA or anchor link to more details
+
+3) Detailed service sections
+- Each service category gets a deeper section with specific deliverables.
+- Include examples of outcomes, planning support, and image usage.
+- Use alternating layouts so the page does not feel repetitive.
+
+4) Session comparison grid
+- Compare session types by planning level, location, turnaround, gallery size, and best use.
+- Make it easy for non-technical/non-creative buyers to choose.
+
+5) Process section
+- Inquiry
+- Creative direction
+- Shoot/session day
+- Editing and curation
+- Gallery delivery
+
+6) FAQ section
+- Use native details/summary or accessible accordion.
+- Questions should address pricing, location, turnaround, retouching, rescheduling, and usage rights.
+
+7) CTA
+- Invite visitors to describe their session and get a custom plan.
+
+Interactive ideas:
+- Service filter/tabs that switch visible service details.
+- Sticky service nav on desktop if it remains accessible.
+- Animated comparison cards that remain readable without JS.
+
+Visual direction:
+- More structured and conversion-focused than Who We Are.
+- Use clean cards, comparison tables, and strong CTA sections.
+- Must feel premium but practical.
+
+========================================
+PAGE TEMPLATE: WORK
+File: page-templates/template-work.php
+URL: /work/
+========================================
+
+Purpose:
+This should be the most visually impressive page. It must make the studio's work feel desirable, polished, and credible.
+
+Required sections:
+1) Page hero
+- Strong portfolio-focused headline.
+- Short copy about style and range.
+- Editorial hero image or collage.
+
+2) Portfolio category nav
+Categories:
+- All
+- Portraits
+- Weddings
+- Brands
+- Events
+- Products
+- Lifestyle
+
+3) Gallery grid
+- At least 12 portfolio cards with local images.
+- Each card includes title, category, short caption, and optional location/session detail.
+- Grid should use a premium editorial layout, not equal-height boring cards only.
+- Must be responsive and visually rich.
+
+4) Featured project/story section
+- Pick one fictional project and tell a short story.
+- Include challenge, creative direction, and result.
+- Use multiple local images if possible.
+
+5) Style notes section
+- Explain the visual style: light, composition, direction, editing.
+- Helps buyers understand why the work feels premium.
+
+6) CTA
+- Invite visitors to book a shoot or discuss a project.
+
+Interactive requirements:
+- Category filter must work with buttons/chips.
+- Filtering must be accessible and keyboard usable.
+- Optional lightbox-style preview is allowed only if robust and accessible.
+- No broken overlay behavior on mobile.
+
+Visual direction:
+- Boldest imagery in the site.
+- More visual density than other pages.
+- Should feel like a polished editorial portfolio, not a blog archive.
+
+========================================
+PAGE TEMPLATE: RESOURCES
+File: page-templates/template-resources.php
+URL: /resources/
+========================================
+
+Purpose:
+Make the studio feel helpful, prepared, and professional. Resources should support client confidence before booking.
+
+Required sections:
+1) Page hero
+- Headline about planning better sessions and getting better images.
+- Supporting copy that positions resources as client guidance.
+
+2) Latest posts loop
+- If WordPress posts exist, show latest posts.
+- If no posts exist, show fallback resource cards.
+
+3) Fallback resource cards
+At least 6 polished cards, examples:
+- What to wear for portraits
+- How to prepare for brand photos
+- Wedding timeline photo checklist
+- Event coverage planning guide
+- Product photo prep checklist
+- How gallery delivery works
+
+Each card includes:
+- Local image
+- Tag/category
+- Title
+- Excerpt
+- Link to /resources/
+
+4) Topic cards
+- Planning
+- Styling
+- Locations
+- Brand shoots
+- Events
+- Delivery and prints
+
+5) CTA
+- Invite users to ask questions or book a planning call.
+
+Interactive ideas:
+- Topic filter chips.
+- Search-style visual input mockup (must still be useful without JS).
+- Expandable planning checklist.
+
+Visual direction:
+- Editorial and useful.
+- Feels like a resource library, not a generic blog list.
+- Clean, calm, scannable.
+
+========================================
+PAGE TEMPLATE: CONTACT
+File: page-templates/template-contact.php
+URL: /contact/
+========================================
+
+Purpose:
+Turn interested visitors into qualified inquiries. This page must feel polished, reassuring, and easy to complete.
+
+Required sections:
+1) Page hero
+- Clear invitation to start a session or project.
+- Supporting copy that explains what happens after inquiry.
+- CTA anchor to the form.
+
+2) Styled inquiry form UI
+Fields:
+- Name
+- Email
+- Phone Number
+- Preferred Date or Timeframe
+- Location
+- Session Type
+- Budget/Investment Range (optional if tasteful)
+- Message
+
+Requirements:
+- Accessible labels.
+- Clear focus states.
+- Helpful helper text.
+- No external form service.
+- Use WordPress-friendly handling or mailto fallback if full processing is outside scope.
+- Make it clear how the website owner can receive inquiries through WordPress setup.
+
+3) Session type options
+- Cards or selectable-looking panels for portraits, weddings, events, brands, product/details, lifestyle/family.
+- These can visually support the form without needing complex backend logic.
+
+4) Booking process
+- Step 1: Send inquiry
+- Step 2: Planning call or email consult
+- Step 3: Session plan
+- Step 4: Shoot day
+- Step 5: Edited gallery delivery
+
+5) Contact details
+- Email placeholder
+- Service area/location placeholder
+- Response-time note
+- Social/profile placeholders if useful (no external embeds)
+
+6) FAQ
+Questions about availability, turnaround, locations, usage rights, and rescheduling.
+
+7) Final reassurance CTA
+- Clear, calm closing message that makes submitting feel low-pressure.
+
+Interactive ideas:
+- Session type cards highlight on focus/click.
+- Form sections can be grouped visually.
+- FAQ accordion.
+
+Visual direction:
+- Clean and confidence-building.
+- Must not feel like a boring default form page.
+- The form should be one of the best-designed parts of the site.
+
+========================================
+FINAL MULTI-PAGE QUALITY BAR
+========================================
+
+The generated theme must feel like a complete website, not just a homepage with filler internal pages.
+Each major page should be visually distinct:
+- Who We Are: warm, personal, editorial story.
+- What We Do: structured, service-led, conversion-focused.
+- Work: image-rich, immersive, portfolio-first.
+- Resources: helpful, organized, editorial library.
+- Contact: clear, reassuring, form-focused, conversion-ready.
+
+Every page must support the business goal: convince visitors that MNY Photo delivers professional, premium photography services and is worth contacting.
+
+
+
+========================================
+WORDPRESS + PREVIEW + GITHUB PAGES RULES
+========================================
+
+Build two matching deliverables:
+1) A complete classic WordPress theme under wp-content/themes/THEMENAME/
+2) A static GitHub Pages preview under docs/themes/THEMENAME/
+
+Important distinction:
+- WordPress runs PHP templates.
+- GitHub Pages does NOT run PHP.
+- The static preview must recreate the visual homepage experience using plain HTML, CSS, and vanilla JS.
+- The static preview must mirror the homepage and header interactions closely enough that a reviewer can understand the theme without installing WordPress.
+
+WordPress requirements:
+- Classic theme templates (PHP), not a block theme.
+- Valid style.css theme header.
+- Proper enqueueing via functions.php.
+- Enqueue assets/css/theme.css and assets/js/theme.js.
+- Use escaping where applicable: esc_html, esc_attr, esc_url, wp_kses_post.
+- Use WordPress functions for local theme assets, such as get_template_directory_uri().
+- Do not hardcode production secrets, API keys, private URLs, or external service credentials.
+- No external runtime dependencies.
+- No CDNs, no remote fonts, no remote images, no icon CDNs.
+- Use local image assets stored under assets/images/.
+- Page templates must include valid Template Name headers.
+- Page templates must contain complete designed markup, not just the_content().
+
+Static preview requirements:
+- docs/themes/THEMENAME/index.html must be a complete static preview of the homepage.
+- It must link to docs/themes/THEMENAME/assets/css/preview.css.
+- It must link to docs/themes/THEMENAME/assets/js/preview.js.
+- It must use local preview images under docs/themes/THEMENAME/assets/images/.
+- It must use relative paths only.
+- It must not reference wp-content paths.
+- It must not require WordPress, PHP, APIs, CDNs, or external runtime services.
+- It must include the header, desktop nolan-menu behavior, mobile drawer behavior, and homepage interactions.
+
+GitHub Pages requirements:
+- docs/index.html must include a card/link for the new theme preview.
+- The preview URL should be: themes/THEMENAME/index.html
+- The preview must avoid broken links and missing assets.
+- GitHub Pages only serves files from docs/ through the Pages workflow.
+
+========================================
+WORDPRESS THEME FILES WE MUST HAVE IN ORDER TO HAVE A FULLY BLOSSOMED WORDPRESS WEBSITE!!!
+========================================
+
+Required WordPress theme files and folders:
+
+wp-content/themes/THEMENAME/
+  style.css (valid theme header)
+  functions.php (enqueue assets and theme setup)
+  header.php
+  footer.php
+  front-page.php
+  index.php
+  page.php
+  single.php
+  archive.php
+  search.php
+  404.php
+  comments.php
+  README.md
+
+  assets/
+    css/theme.css
+    js/theme.js
+    images/
+      hero/
+      portfolio/
+      services/
+      resources/
+      team/
+      texture/
+
+  scss/
+    main.scss
+    abstracts/_variables.scss
+    abstracts/_mixins.scss
+    abstracts/_functions.scss
+    base/_reset.scss
+    base/_typography.scss
+    base/_accessibility.scss
+    base/_forms.scss
+    components/_buttons.scss
+    components/_cards.scss
+    components/_forms.scss
+    components/_badges.scss
+    components/_accordion.scss
+    components/_carousel.scss
+    components/_portfolio-filter.scss
+    components/_before-after.scss
+    layout/_container.scss
+    layout/_header.scss
+    layout/_footer.scss
+    layout/_grid.scss
+    layout/_sections.scss
+    pages/_home.scss
+    pages/_contact.scss
+    pages/_services.scss
+    pages/_work.scss
+    pages/_resources.scss
+    pages/_who-we-are.scss
+
+  template-parts/
+    content-hero.php
+    content-brand-statement.php
+    content-featured-work.php
+    content-services.php
+    content-process.php
+    content-style-pillars.php
+    content-testimonials.php
+    content-resources-preview.php
+    content-final-cta.php
+    content-footer-widgets.php
+    content-none.php
+    content-page.php
+    content-single.php
+
+  page-templates/
+    template-who-we-are.php
+    template-what-we-do.php
+    template-work.php
+    template-resources.php
+    template-contact.php
+
+Required static preview files and folders:
+
+docs/themes/THEMENAME/
+  index.html
+  assets/css/preview.css
+  assets/js/preview.js
+  assets/images/
+    hero/
+    portfolio/
+    services/
+    resources/
+    team/
+    texture/
+
+Required gallery update:
+- docs/index.html must link to docs/themes/THEMENAME/index.html using the relative URL themes/THEMENAME/index.html.
+
+Minimum quality requirements for these files:
+- No blank files.
+- No placeholder-only files.
+- CSS files must contain meaningful, complete styling.
+- JS files must implement the required interactions or safely no-op when markup is missing.
+- Page templates must include full page layouts.
+- Image folders should contain local sample/demo images used by the theme and preview.
+- README.md should explain what the theme includes and how to install/use it.
+
+
+
+========================================
+FINAL DEFINITION OF DONE
+========================================
+
+Done means the generated output is a complete, polished, multi-page photography website system, not a partial theme or homepage-only demo.
+
+Theme + file structure:
+- Valid WordPress theme header exists in style.css.
+- All required WordPress theme files exist and contain meaningful code/content.
+- All required page templates exist with valid Template Name headers.
+- Required template-parts exist and are used where appropriate.
+- Required SCSS organization exists and matches the requested structure.
+- assets/css/theme.css contains complete final styling, even if SCSS is included only as source organization.
+- assets/js/theme.js contains the required interactions and safely no-ops if markup is missing.
+- README.md exists and explains the theme, major features, and usage/installation notes.
+
+Header + navigation:
+- Desktop header layout is complete: logo, exact nav items, direct links, and Contact Us CTA.
+- What We Do, Who We Are, and Resources open correct nolan-menu panels.
+- Required data attributes are used exactly.
+- Header panels open/close correctly on click.
+- Only one panel is open at a time.
+- Same trigger toggles the active panel closed.
+- Outside click closes active panels.
+- Escape closes active panels and mobile drawer.
+- Backdrop appears when a panel or drawer is open.
+- Body scroll locks while a panel or drawer is open.
+- aria-expanded, aria-controls, hidden/aria-hidden states are accurate.
+- Left rail hover and keyboard focus update right-side content.
+- Header panels are solid, readable, stable, and premium. No transparent or unreadable overlays.
+- Mobile drawer is dedicated, polished, accessible, and not a stacked desktop panel.
+- Mobile drawer includes accordion sections and full-width CTA behavior.
+- No keyboard traps and no hidden focusable items inside closed accordions.
+
+Homepage:
+- front-page.php includes a complete premium photography homepage.
+- Homepage includes hero, brand statement, portfolio preview, services preview, process, signature style, about preview, proof/stat band, testimonials, booking/investment, FAQ, resources preview, and final CTA.
+- Homepage includes the requested interactions: portfolio filter, spotlight carousel, before/after reveal, testimonial controls, scroll reveal, and optional count-up stats only if stable.
+- Homepage remains understandable and usable if JavaScript is disabled.
+
+Internal pages:
+- Who We Are page is fully designed and feels warm, editorial, and credible.
+- What We Do page is fully designed and clearly explains all services.
+- Work page is image-rich, polished, and includes at least 12 portfolio cards.
+- Resources page is a real resource library with posts/fallback cards and useful topics.
+- Contact page includes a polished accessible inquiry form UI and clear booking process.
+- Each internal page has its own visual rhythm and does not feel like copied filler.
+- Each internal page includes local imagery, strong hierarchy, and conversion-focused CTAs.
+
+Images + assets:
+- Local image folders exist in both the WordPress theme and static preview.
+- Portfolio, hero, services, resources, and feature visuals primarily use local sample/demo photography.
+- Images are named clearly and stored in the requested assets/images folders.
+- Images use useful alt text, or empty alt text only when decorative.
+- No copyrighted client photos, celebrity photos, random Google images, watermarked stock, blurry placeholders, or generic gray boxes.
+
+Static preview + GitHub Pages:
+- docs/themes/THEMENAME/index.html mirrors the WordPress homepage and header behavior closely.
+- docs/themes/THEMENAME/assets/css/preview.css contains complete preview styling.
+- docs/themes/THEMENAME/assets/js/preview.js mirrors required header/homepage interactions.
+- Static preview uses only relative paths and local assets.
+- Static preview does not reference wp-content paths.
+- docs/index.html includes the new theme card linking to themes/THEMENAME/index.html.
+- No broken preview links, missing images, or missing assets.
+
+Accessibility + responsive quality:
+- Mobile layout is fully optimized across small screens and tablets.
+- No horizontal scrolling.
+- Tap targets are comfortable.
+- Focus-visible styles are strong and obvious.
+- Keyboard navigation works for header panels, rail content, mobile drawer, accordions, filters, carousel controls, and form fields.
+- prefers-reduced-motion is respected.
+- Color contrast is readable.
+- No console errors.
+
+Validation + packaging:
+- PHP syntax checks pass.
+- Required file checks pass.
+- CSS size/meaningfulness checks pass.
+- Theme ZIP is generated under zippedTheme/.
+
