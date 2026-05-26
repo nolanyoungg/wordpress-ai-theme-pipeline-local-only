@@ -42,13 +42,13 @@ Your prompt must require the generated output to meet all of the following:
 - Includes accessible interactions (keyboard + focus states).
 - Respects `prefers-reduced-motion` for animations.
 
-### 5. “Full Blown Website” Expectations (Homepage)
+### 5. "Full Blown Website" Expectations (Homepage)
 
 Your prompt should require at least these sections on the front page and in the static preview:
 
 - Hero: strong headline + subhead + primary CTA + secondary CTA
 - Trust row: badges/logos/metrics (text-only ok)
-- Services: 4–6 cards (WordPress builds, performance, maintenance, integrations, AI automation)
+- Services: 4-6 cards (WordPress builds, performance, maintenance, integrations, AI automation)
 - Case studies / featured projects: at least 3 cards
 - Process: at least 4 steps
 - Testimonials: 2–3 entries
@@ -82,7 +82,7 @@ HARD CONSTRAINTS
 - Update docs/index.html to add the new theme card.
 
 EXPERIENCE + CONTENT
-[Describe the site’s business, positioning, and voice.]
+[Describe the site's business, positioning, and voice.]
 Require: Hero, Trust, Services, Case Studies, Process, Testimonials, Engagement Models, FAQ accordion (5+), Final CTA.
 
 VISUAL DIRECTION (MAKE IT CLEARLY DISTINCT)
@@ -95,6 +95,8 @@ INTERACTIONS
 ```
 
 ## How To Run A Prompt File
+
+Add your prompt as a plain text file in this folder (recommended extension: `.txt`). Commit it if you want the exact prompt used for a theme to be reproducible later.
 
 From a fresh PowerShell window:
 
@@ -111,4 +113,3 @@ git add -A
 git commit -m "Add new theme version"
 git push origin main
 ```
-
