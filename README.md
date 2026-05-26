@@ -1,103 +1,55 @@
 # WordPress AI Theme Pipeline (Local-Only, Ollama)
 
-This repository is now at a clean starting point. There are no generated theme folders or ZIPs checked in. The first local Ollama run is expected to create `nolan-young-showcase-theme-x01` and its matching static preview.
-
-The active workflow is local-only:
-- Ollama at `http://localhost:11434`
-- Default model: `qwen2.5-coder:32b`
-- PowerShell orchestration
-- GitHub Actions only for validation, packaging, and GitHub Pages publishing
-
-Codex/OpenAI are not part of the active workflow.
-
 ## Current State
 
-- No generated theme folders are committed right now.
-- No generated preview folders are committed right now.
-- `docs/index.html` is an empty-state gallery page so GitHub Pages does not point at removed previews.
-- `docs/.nojekyll` is present so Pages can serve the repo cleanly.
+- This repository is intentionally "empty" of generated themes right now: no `wp-content/themes/nolan-young-showcase-theme-xNN/`, no `docs/themes/nolan-young-showcase-theme-xNN/`, and no committed ZIPs under `zippedTheme/`.
+- GitHub Pages serves the static gallery from `docs/index.html` (Pages deploy is handled by GitHub Actions).
+- Theme generation happens locally via Ollama at `http://localhost:11434`. No cloud AI is required.
 
-## Run Examples
+## What This Repo Does
 
-### a) Run (create next versioned theme + preview)
+- Generates a versioned classic WordPress theme under `wp-content/themes/nolan-young-showcase-theme-xNN/`
+- Generates a matching static preview under `docs/themes/nolan-young-showcase-theme-xNN/` for GitHub Pages
+- Validates required files + PHP syntax, then packages a ZIP under `zippedTheme/`
+- You commit/push results to `main` to publish the gallery + previews
 
-```powershell
-$env:OLLAMA_MODEL="qwen2.5-coder:32b"
-powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "Create the next versioned WordPress theme for a premium AI automation and web development company. Make it visually impressive, highly interactive, mobile-first, accessible, and include the matching static preview."
-```
+## Prerequisites
 
-### b) Run (create next versioned theme + preview + skip planner)
+- Git
+- PHP (for `php -l` validation)
+- Ollama running locally
+- The model you want to use installed (default is `qwen2.5-coder:32b`)
 
-`builder-only` skips the planner step and runs the builder/reviewer workflow directly.
+## Generate (Next Version)
 
-```powershell
-$env:OLLAMA_MODEL="qwen2.5-coder:32b"
-$env:OLLAMA_WORKFLOW_MODE="builder-only"
-powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "Create the next versioned WordPress theme for a premium AI automation and web development company. Make it visually impressive, highly interactive, mobile-first, accessible, and include the matching static preview."
-```
-
-For longer prompts, put the prompt text in a `.txt` file and pass it with `Get-Content -Raw` so PowerShell does not misread multiline input:
+Pass your prompt as a single string, or load it from a local `.txt` file that is NOT committed to this repo.
 
 ```powershell
+cd C:\Users\Nolan\Documents\Codex\wordpress-ai-theme-pipeline-local-only
+
 $env:OLLAMA_MODEL="qwen2.5-coder:32b"
-powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 (Get-Content -Raw "C:\Users\Nolan\Documents\Codex\.Prompts\mny-photo-theme-spec-local-ollama.txt")
+$env:OLLAMA_HTTP_TIMEOUT_MINUTES="360"
+
+powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 (Get-Content -Raw "C:\path\to\your-prompt.txt")
 ```
 
-The first theme created from this clean state will be `nolan-young-showcase-theme-x01`.
-
-## Validation
+## Validate
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/validate-themes.ps1
 ```
 
-## PR Workflow
-
-1. Create a branch:
-
-```powershell
-git checkout -b feature/theme-x01
-```
-
-2. Run the workflow:
-
-```powershell
-$env:OLLAMA_MODEL="qwen2.5-coder:32b"
-powershell -ExecutionPolicy Bypass -File scripts/run-local-ollama-workflow.ps1 "YOUR THEME TASK HERE"
-```
-
-3. Validate:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/validate-themes.ps1
-```
-
-4. Commit and push:
+## Publish (Make It Live)
 
 ```powershell
 git status
 git add -A
-git commit -m "Add nolan-young-showcase-theme-x01"
-git push -u origin HEAD
+git commit -m "Add nolan-young-showcase-theme-x01 (Ollama local-only)"
+git push origin main
 ```
 
-5. Open a Pull Request on GitHub from your branch into `main`.
+## Troubleshooting
 
-## Local Agent Flow
-
-`scripts/run-local-ollama-workflow.ps1` does the following:
-
-1. Detects the next available `nolan-young-showcase-theme-xNN` version.
-2. Creates the target theme and preview folders.
-3. Runs the Planner Agent unless `OLLAMA_WORKFLOW_MODE=builder-only`.
-4. Runs the Builder Agent and writes safe file blocks.
-5. Runs validation.
-6. Runs the Reviewer Agent.
-7. Runs the Fixer Agent if needed.
-8. Validates again and packages the ZIP.
-
-## Notes
-
-- The workflow cleans up failed partial outputs by default.
-- Set `OLLAMA_KEEP_FAILED_OUTPUT=1` if you want to inspect a failed run.
-- GitHub Pages is only a renderer for `docs/`; it does not run WordPress/PHP.
+- Ollama request logs: `.ai/logs/ollama-workflow.log`
+- Keep failed outputs: set `OLLAMA_KEEP_FAILED_OUTPUT=1`
+- GitHub Pages can only render `docs/`; it does not run WordPress/PHP
