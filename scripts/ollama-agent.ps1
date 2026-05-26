@@ -58,7 +58,14 @@ function Truncate([string]$Text, [int]$MaxChars) {
 	return ($Text.Substring(0, $MaxChars) + "`n...[truncated]...")
 }
 
-function Build-LatestContext([string]$Root, [string]$ThemeSlug, [string]$ThemeDir, [string]$PreviewDir) {
+function Build-LatestContext([string]$Root, [string]$ThemeSlug, [string]$ThemeDir, [string]$PreviewDir) {
+$disableLatestContext = $env:OLLAMA_DISABLE_LATEST_CONTEXT
+if ($disableLatestContext) {
+$disableLatestContext = $disableLatestContext.Trim().ToLowerInvariant()
+if ($disableLatestContext -in @("1", "true", "yes", "y", "on")) {
+return ""
+}
+}
 	if (-not $ThemeSlug -or -not $ThemeDir -or -not $PreviewDir) { return "" }
 
 	$parts = @()
@@ -154,54 +161,43 @@ function Assert-AllowedRelativePath([string]$RepoRoot, [string]$RelPath, [string
 }
 
 function Write-FileBlocks([string]$RepoRoot, [string]$Text, [string]$ThemeSlug) {
-	$lines = $Text -split "(`r`n|`n|`r)"
-	$inBlock = $false
-	$curPath = $null
-	$buf = New-Object System.Collections.Generic.List[string]
-	$written = New-Object System.Collections.Generic.List[string]
+# Builder/Fixer models sometimes add harmless wrapper text before or after valid file blocks.
+# Only matched file blocks are written, and every path is still checked by Assert-AllowedRelativePath.
 
-	for ($i = 0; $i -lt $lines.Length; $i++) {
-		$line = $lines[$i]
+$textToParse = $Text.Trim()
 
-		if (-not $inBlock) {
-			if ($line -match '^---FILE:\s*(.+?)\s*---$') {
-				$curPath = $Matches[1]
-				Assert-AllowedRelativePath -RepoRoot $RepoRoot -RelPath $curPath -ThemeSlug $ThemeSlug
-				$inBlock = $true
-				$buf.Clear() | Out-Null
-			} elseif ($line.Trim().Length -gt 0) {
-				throw "Non-file-block content detected outside file blocks. Builder/Fixer must output ONLY file blocks."
-			}
-			continue
-		}
+# Remove standalone markdown fence lines if the model wrapped the response.
+$textToParse = [regex]::Replace($textToParse, '(?m)^```(?:text|markdown|md|php|html|css|js|javascript|powershell)?\s*$', '')
+$textToParse = [regex]::Replace($textToParse, '(?m)^```\s*$', '')
 
-		if ($line -eq '---END FILE---') {
-			$rel = $curPath
-			$dest = Join-Path $RepoRoot $rel
-			$destDir = Split-Path -Parent $dest
-			if ($destDir) { New-Item -ItemType Directory -Force $destDir | Out-Null }
-			($buf -join "`n") | Set-Content -Encoding UTF8 -Path $dest
-			$written.Add($rel) | Out-Null
-			$inBlock = $false
-			$curPath = $null
-			$buf.Clear() | Out-Null
-			continue
-		}
+$pattern = '(?ms)^---FILE:\s*(.+?)\s*---\r?\n(.*?)\r?\n---END FILE---\s*'
+$matches = [regex]::Matches($textToParse, $pattern)
 
-		$buf.Add($line) | Out-Null
-	}
-
-	if ($inBlock) {
-		throw "Unterminated file block for path: $curPath"
-	}
-
-	if ($written.Count -eq 0) {
-		throw "No valid file blocks found. Builder/Fixer must output ONLY file blocks."
-	}
-
-	return $written
+if ($matches.Count -eq 0) {
+throw "No valid file blocks found. Builder/Fixer must output at least one ---FILE: ... ---END FILE--- block."
 }
 
+$written = New-Object System.Collections.Generic.List[string]
+
+foreach ($match in $matches) {
+$rel = $match.Groups[1].Value.Trim()
+$content = $match.Groups[2].Value
+
+Assert-AllowedRelativePath -RepoRoot $RepoRoot -RelPath $rel -ThemeSlug $ThemeSlug
+
+$dest = Join-Path $RepoRoot $rel
+$destDir = Split-Path -Parent $dest
+
+if ($destDir) {
+New-Item -ItemType Directory -Force $destDir | Out-Null
+}
+
+$content | Set-Content -Encoding UTF8 -Path $dest
+$written.Add($rel) | Out-Null
+}
+
+return $written
+}
 $root = Resolve-Path (Join-Path $PSScriptRoot "..") | Select-Object -ExpandProperty Path
 $aiDir = Join-Path $root ".ai"
 New-Item -ItemType Directory -Force $aiDir | Out-Null
@@ -248,4 +244,6 @@ if ($Agent -in @("builder", "fixer")) {
 } else {
 	Write-Output $resultOut
 }
+
+
 
