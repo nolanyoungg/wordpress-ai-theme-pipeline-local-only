@@ -1,4 +1,4 @@
-param(
+﻿param(
 	[Parameter(Mandatory = $true)]
 	[ValidateSet("planner", "builder", "reviewer", "fixer")]
 	[string]$Agent,
@@ -25,7 +25,7 @@ param(
 	[string]$ThemeZip,
 
 	[Parameter(Mandatory = $false)]
-	[string]$Model = "qwen2.5-coder:32b",
+	[string]$Model = "qwen2.5-coder:14b",
 
 	[Parameter(Mandatory = $false)]
 	[string]$LatestThemeSlug = "",
@@ -248,3 +248,4 @@ if ($Agent -in @("builder", "fixer")) {
 } else {
 	Write-Output $resultOut
 }
+

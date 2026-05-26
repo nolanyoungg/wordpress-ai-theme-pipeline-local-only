@@ -1,4 +1,4 @@
-param(
+﻿param(
 	[Parameter(Mandatory = $true)]
 	[string]$UserTask
 )
@@ -112,7 +112,7 @@ if (Test-Path -LiteralPath $docsIndexPath) {
 	$docsIndexBefore = Get-Content -LiteralPath $docsIndexPath -Raw
 }
 
-$model = "qwen2.5-coder:32b"
+$model = "qwen2.5-coder:14b"
 if ($env:OLLAMA_MODEL) { $model = $env:OLLAMA_MODEL }
 
 $baseUri = "http://localhost:11434"
@@ -166,10 +166,10 @@ $createdZipFull = Join-Path $root $THEME_ZIP
 try {
 	# Planner -> Builder -> Validate -> Reviewer -> optional Fixer -> Validate -> Zip
 	if ($workflowMode -eq "full") {
-	Write-Output "Running Planner Agent via Ollama ($model)..."
+	Write-Output "Running Supplemental Design Plan Agent via Ollama ($model)..."
 		& (Join-Path $PSScriptRoot "ollama-agent.ps1") -Agent "planner" -UserTask $UserTask -ThemeSlug $THEME_SLUG -ThemeDisplayName $THEME_DISPLAY_NAME -ThemeVersion $THEME_VERSION -ThemeDir $THEME_DIR -PreviewDir $PREVIEW_DIR -ThemeZip $THEME_ZIP -Model $model -LatestThemeSlug $latestSlug -LatestThemeDir $latestThemeDir -LatestPreviewDir $latestPreviewDir | Out-Null
 	} else {
-		Write-Output "Skipping Planner Agent (OLLAMA_WORKFLOW_MODE=$workflowMode)."
+		Write-Output "Skipping Supplemental Design Plan Agent (OLLAMA_WORKFLOW_MODE=$workflowMode)."
 	}
 
 	Write-Output "Running Builder Agent via Ollama ($model)..."
@@ -228,3 +228,5 @@ Write-Output "  git status"
 Write-Output "  git add ."
 Write-Output "  git commit -m `"Add $THEME_SLUG (Ollama local-only)`""
 Write-Output "  git push"
+
+
