@@ -206,16 +206,11 @@ $root = Resolve-Path (Join-Path $PSScriptRoot "..") | Select-Object -ExpandPrope
 $aiDir = Join-Path $root ".ai"
 New-Item -ItemType Directory -Force $aiDir | Out-Null
 $agentsDir = Join-Path $root "agents"
-$promptsDir = Join-Path $root "prompts"
 
 $agentsMd = Read-TextOrEmpty (Join-Path $root "AGENTS.md")
 if (-not $agentsMd) { Write-Die "Missing AGENTS.md at repo root." }
 
 $templatePath = Join-Path $agentsDir ("$Agent-agent.md")
-if (-not (Test-Path -LiteralPath $templatePath)) {
-	# Back-compat for older repos.
-	$templatePath = Join-Path $promptsDir ("$Agent-agent.md")
-}
 if (-not (Test-Path -LiteralPath $templatePath)) { Write-Die "Missing prompt template: $templatePath" }
 $template = Get-Content -LiteralPath $templatePath -Raw
 
