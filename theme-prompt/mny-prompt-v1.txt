@@ -1,0 +1,635 @@
+Create the NEXT versioned classic WordPress theme at wp-content/themes/nolan-showcase-theme-xN/ and a matching static preview at docs/themes/nolan-showcase-theme-xN/. Update docs/index.html to link the new version. Never overwrite older versions.
+
+Theme brief: MNY Photo. Build a premium, bright editorial/cinematic photography studio site with a highly interactive front page and a premium mega-header/navigation system. No lorem ipsum. No dead nav links. All runtime assets local.
+
+Hard constraints:
+- No OpenAI API usage, no OPENAI_API_KEY, no openai/codex-action, no external services.
+- No CDN runtime dependencies for the WordPress theme or the static preview.
+- No heavy frontend frameworks (do NOT use React/Vue/etc). Use lightweight vanilla JS only.
+- Keep WP theme (wp-content/) separate from preview (docs/).
+- Do not break older theme versions.
+
+REPO CONTRACTS (must satisfy CI):
+1) Theme folders are source of truth: wp-content/themes/nolan-showcase-theme-xN/
+2) Previews are static: docs/themes/nolan-showcase-theme-xN/
+3) ZIPs are committed: zippedTheme/nolan-showcase-theme-xN.zip must exist and be regenerated when the theme changes.
+
+Required theme files (must exist):
+style.css, functions.php, index.php, header.php, footer.php, front-page.php, page.php, single.php, archive.php, search.php, 404.php, comments.php,
+template-parts/content.php, template-parts/content-page.php, template-parts/content-single.php, template-parts/content-none.php,
+searchform.php, sidebar.php,
+assets/css/theme.css (non-trivial), assets/js/theme.js (non-trivial), assets/images/ (non-empty), README.md.
+
+functions.php requirements:
+- theme supports: title-tag, post-thumbnails, custom-logo, automatic-feed-links, responsive-embeds, html5
+- register menus: primary + footer
+- register at least one sidebar
+- enqueue assets/css/theme.css and assets/js/theme.js with filemtime cache-busting
+- no jQuery dependency; safe escaping; prefixed functions
+
+STATIC PREVIEW contract (must satisfy CI):
+- docs/themes/nolan-showcase-theme-xN/index.html MUST load:
+  - assets/css/preview.css
+  - assets/js/preview.js
+- Put preview assets under:
+  docs/themes/nolan-showcase-theme-xN/assets/css/preview.css
+  docs/themes/nolan-showcase-theme-xN/assets/js/preview.js
+  docs/themes/nolan-showcase-theme-xN/assets/images/*
+- Also create these preview pages (and ensure nav links work):
+  who-we-are.html, what-we-do.html, work.html, resources.html, contact.html
+
+HEADER + NAV 
+Goal: a 3-part header (logo | primary nav | CTA) with rich mega panels that have a left rail and a right content area that updates as the user hovers (and keyboard-focuses) rail items.
+
+Class naming (use these Nolan-style names):
+- nolan-menu, nolan-menu__nav, nolan-menu__brand, nolan-menu__list, nolan-menu__item, nolan-menu__trigger, nolan-menu__link
+- nolan-menu__panel, nolan-menu__panel-inner, nolan-menu__rail, nolan-menu__rail-button, nolan-menu__content, nolan-menu__preview
+- nolan-menu__cta, nolan-menu__backdrop, nolan-menu-mobile
+
+Desktop header requirements:
+- Left: logo (links to homepage)
+- Center nav items:
+  - What We Do (opens mega panel)
+  - Who We Are (opens mega panel)
+  - Work (direct link to /work/)
+  - Resources (opens mega panel)
+- Right: Contact Us CTA (links to /contact/)
+
+Use:
+ 
+- bright editorial styling
+- soft white/ivory backgrounds
+- warm accent colors
+- refined typography
+- sticky positioning
+- subtle blur or shadow on scroll
+- polished hover states
+- clear focus-visible states
+- soft layered depth
+- balanced whitespace
+- believable production-quality spacing
+ 
+The header should feel like a real premium photography company website.
+ 
+Dropdown/navigation panel requirements:
+ 
+The dropdown panels must NOT be transparent.
+ 
+Every opened navigation panel must have a solid, readable background.
+
+Desktop mega panel behavior:
+- Open/close on click (optional hover-open is allowed only if it is robust and does not break mobile).
+- Only one panel open at a time; toggling another closes the current.
+- Clicking the same trigger closes it.
+- Clicking outside closes it.
+- Escape closes it.
+- When open: show full-page backdrop and lock body scroll.
+- Panels must be SOLID and readable (warm white/ivory background, border, shadow, stable z-index). No transparency.
+- Panel layout: left rail (list of category buttons) + right content area with multiple sections.
+- Right content MUST update on rail hover AND rail keyboard focus (Tab navigation). This is the signature interaction.
+
+Required data attributes (follow exactly):
+- button[data-menu-item=\"what-we-do\"] controls div[data-menu-dropdown=\"what-we-do\"]
+- button[data-menu-item=\"who-we-are\"] controls div[data-menu-dropdown=\"who-we-are\"]
+- button[data-menu-item=\"resources\"] controls div[data-menu-dropdown=\"resources\"]
+
+Inside each panel:
+- left rail buttons: [data-rail-item=\"<key>\"] (button elements)
+- right sections: section[data-rail-content=\"<key>\"] (only one visible at a time)
+
+Panel content requirements:
+- What We Do rail items:
+  Portrait Sessions, Weddings & Engagements, Events & Celebrations, Brand Photography, Product & Detail Photography, Lifestyle & Family Sessions
+  Right side shows: photo, title, short premium description, 3-5 bullet details, CTA to /what-we-do/
+- Who We Are rail items:
+  The Studio, Our Approach, The Client Experience
+  Right side shows: photo, headline, values list, CTA to /who-we-are/
+- Resources panel:
+  Grid of at least 4 resource cards with photo, tag, title, excerpt, link to /resources/
+
+Mobile nav requirements:
+- Dedicated mobile drawer (not a stacked desktop panel).
+- open button, close button, backdrop click close, Escape close, aria-expanded updates.
+- accordion sections for What We Do / Who We Are / Resources; Work + Contact are direct links.
+- solid readable background; no keyboard traps.
+- should be just as impressive as the desktop version
+
+Button classes:
+
+- .btn
+- .btn-primary
+- .btn-secondary
+- .btn-header-cta
+- .btn-smball
+- .btn-full
+- .btn-text
+
+All buttons should be checked and properly styles into their respected wp-content/themes/THEMENAME/scss/components/_buttons.scss
+
+
+THEME STRUCTURE 
+
+Here's a guideline to use for organizing the files, the styles at least! Feel free to add to this as you see fit.
++---scss
+|   |   main.scss
+|   |   
+|   +---abstracts
+|   |       _mixins.scss
+|   |       _variables.scss
+|   |       
+|   +---base
+|   |       _reset.scss
+|   |       _typography.scss
+|   |       
+|   +---components
+|   |       _buttons.scss
+|   |       _cards.scss
+|   |       
+|   +---layout
+|   |       _footer.scss
+|   |       _header.scss
+|   |       
+|   \---pages
+|           _contact.scss
+|           _services.scss
+|           
+\---template-parts
+        content-footer-widgets.php
+        content-hero.php
+        content-none.php
+        content-page.php
+        content-services.php
+        content-single.php
+
+JS (assets/js/theme.js):
+- Desktop: panel open/close, one panel at a time, backdrop, outside click close, Escape close, aria-expanded updates
+- Desktop: rail hover/focus switching for right-hand content (must work with keyboard focus, not only hover)
+- Mobile: drawer open/close + accordion behavior
+- sticky/scrolled header class
+- optional smooth-scroll for in-page anchors
+- optional scroll reveal (must respect prefers-reduced-motion)
+- no console errors; no external libraries
+
+CSS (assets/css/theme.css):
+- Bright editorial palette (warm whites/ivories + champagne accents + charcoal text)
+- Strong focus-visible styles
+- Solid mega panels with stable z-index, border + shadow, and consistent left-rail background tint (no bleed-through)
+- Responsive system: variables, containers, spacing scale, breakpoints; no horizontal scrolling
+- prefers-reduced-motion support
+
+INTERACTIVE FRONT PAGE (front-page.php must feel “alive”, still usable with JS disabled):
+Implement multiple lightweight, premium interactions using vanilla JS:
+1) Featured Work filter: category chips that filter a grid (animated, accessible, keyboard-usable).
+2) “Spotlight” carousel/slider for 3 featured stories (drag optional; provide buttons; ARIA-friendly).
+3) Before/After reveal (retouching or color grading) using a slider input; include reduced-motion safe fallback.
+4) Testimonials rotator (buttons + pause on focus/hover; no auto-advance if prefers-reduced-motion).
+5) Scroll reveal for sections (subtle; off by default if prefers-reduced-motion).
+6) Optional count-up stats (only if it does not feel gimmicky; must not shift layout).
+
+Pages (real multi-page site, not just homepage):
+- front-page.php: hero + portfolio/filter + services + process + testimonials + resources preview + final CTA
+- page templates in page-templates/ (each with a valid Template Name header and fully designed markup, not just the_content()):
+  template-who-we-are.php, template-what-we-do.php, template-work.php, template-resources.php, template-contact.php
+- Work page: at least 12 portfolio cards (with local images)
+- Contact page: styled inquiry form UI (no external service), accessible labels
+
+
+Visual direction:
+ 
+Move away from the darker tone look.
+ 
+Use a brighter, cleaner, professional, modern editorial photography style.
+ 
+The overall site should feel:
+ 
+- bright
+- premium
+- clean
+- airy
+- warm
+- refined
+- elegant
+- believable
+- modern
+- professional
+ 
+Use mostly light backgrounds with selective dark contrast sections.
+ 
+Suggested color palette:
+ 
+- Warm white: #fffaf3
+- Soft ivory: #f7f1e7
+- Clean white: #ffffff
+- Light sand: #eadfce
+- Warm beige: #d8c4a4
+- Champagne gold: #b99558
+- Soft taupe: #8f7a61
+- Muted clay: #b66f4f
+- Charcoal text: #1f1c18
+- Soft black: #11100d
+ 
+Use white backgrounds for most sections.
+ 
+Use darker colors mainly for:
+ 
+- footer
+- selected CTA sections
+- strong text contrast
+- occasional editorial split sections
+ 
+The site should not feel overly dark or black-background dominant.
+
+
+ Image/photo requirements:
+
+Use real, high-quality, copyright-safe sample photography instead of generic filler images.
+ 
+The finished theme and static preview should look like a real photography company website, not a placeholder demo.
+ 
+Use only images that are safe for demo/theme use, such as:
+ 
+- royalty-free photography
+- permissive-use sample photography
+- locally stored image assets
+- properly named local files
+ 
+Do not use:
+ 
+- copyrighted client photos
+- celebrity photos
+- random Google images
+- watermarked stock photos
+- blurry placeholders
+- generic gray boxes
+- fake image placeholders where real demo imagery would improve the design
+ 
+The sample photography should match the MNY Photo style:
+ 
+- bright editorial portraits
+- soft wedding/couple moments
+- clean brand photography
+- modern event coverage
+- product/detail photography
+- lifestyle/family imagery
+- studio/editorial compositions
+ 
+All images used by the theme must be stored locally inside:
+ 
+assets/images/
+ 
+Also copy the required preview images into:
+ 
+docs/themes/nolan-showcase-theme-xN/assets/images/
+ 
+SVG graphics may still be used for:
+ 
+- logo marks
+- icons
+- subtle decorative accents
+- separators
+- abstract editorial overlays
+ 
+But the portfolio, hero sections, service cards, and featured visuals should primarily use real sample photography.
+ 
+Page templates required:
+ 
+Create these page templates:
+ 
+- page-templates/template-who-we-are.php
+- page-templates/template-what-we-do.php
+- page-templates/template-work.php
+- page-templates/template-resources.php
+- page-templates/template-contact.php
+ 
+Each must include a valid WordPress Template Name header.
+ 
+Each page must be filled with polished content.
+ 
+Do not create blank page templates.
+ 
+Do not create pages that only call the_content().
+ 
+Main page URLs:
+ 
+- /who-we-are/
+- /what-we-do/
+- /work/
+- /resources/
+- /contact/
+ 
+Fallback navigation must use these same URLs.
+ 
+Homepage requirements:
+ 
+front-page.php must include:
+ 
+1. Cinematic hero section
+ 
+Include:
+ 
+- large headline
+- refined subheadline
+- primary CTA to /contact/
+- secondary CTA to /work/
+- layered editorial image composition
+- trust/proof tags
+- real photography imagery
+ 
+Suggested headline:
+ 
+Cinematic photography for people, brands, and unforgettable moments.
+ 
+2. Brand statement section
+ 
+Explain what MNY Photo does and why it feels premium.
+ 
+3. Portfolio preview
+ 
+At least 9 cards:
+ 
+- Editorial Portrait
+- Wedding Story
+- Brand Campaign
+- Event Coverage
+- Product Detail
+- Family Lifestyle
+- Black & White Study
+- Couple Session
+- Pet Session
+ 
+Use real sample photography.
+ 
+CTA to /work/.
+ 
+4. Services preview
+
+At least 6 service cards:
+ 
+- Portrait Sessions
+- Weddings & Engagements
+- Events & Celebrations
+- Brand Photography
+- Product & Detail Photography
+- Lifestyle & Family Sessions
+ 
+CTA to /what-we-do/.
+ 
+5. Process section
+ 
+Steps:
+ 
+- Inquiry
+- Creative Direction
+- Session Day
+- Editing
+- Gallery Delivery
+ 
+6. Signature style section
+ 
+Pillars:
+ 
+- Cinematic light
+- Natural direction
+- Editorial composition
+- Warm, polished editing
+ 
+7. About preview
+ 
+CTA to /who-we-are/.
+ 
+8. Proof/stat band
+ 
+Use realistic proof points:
+ 
+- 6+ session styles
+- 48-hour sneak peek option
+- 100% custom session planning
+- Print-ready gallery delivery
+ 
+9. Testimonials
+ 
+At least 3 fictional testimonials.
+ 
+10. Booking/investment section
+ 
+Explain custom session pricing factors without fake fixed prices.
+ 
+11. FAQ
+ 
+Use native details/summary.
+ 
+12. Resources preview
+ 
+Show latest posts if available, otherwise fallback resource cards.
+ 
+13. Final CTA
+ 
+Buttons:
+ 
+- Contact Us
+- View Work
+ 
+Who We Are page:
+ 
+Include:
+ 
+- hero
+- brand story
+- studio values
+- approach
+- client experience
+- editing philosophy
+- CTA
+ 
+Use believable company-style layouts and imagery.
+ 
+What We Do page:
+ 
+Include:
+ 
+- hero
+- service overview
+- detailed service cards
+- session comparison grid
+- process
+- FAQ
+- CTA
+ 
+Use real sample photography throughout the page.
+ 
+Work page:
+ 
+Include:
+ 
+- hero
+- portfolio category nav
+- gallery grid with at least 12 cards
+- featured project/story section
+- CTA
+ 
+The Work page should feel especially polished and visually rich.
+ 
+Resources page:
+ 
+Include:
+ 
+- hero
+- latest posts loop
+- fallback resource cards
+- topic cards
+- CTA
+ 
+Contact page:
+ 
+Include:
+ 
+- hero
+- styled inquiry form
+- contact details
+- session type options
+- booking process
+- FAQ
+ 
+Form fields:
+ 
+- Name
+- Email
+- Phone Number
+- Preferred Date or Timeframe
+- Location
+- Message
+ 
+Use accessible labels.
+ 
+No external form service.And ensure these forms can be sent to the website owner via email/wp set up.
+ 
+Static preview requirements:
+
+The static GitHub Pages preview is REQUIRED.
+ 
+Create matching static preview files under docs/themes/nolan-showcase-theme-xN/.
+ 
+Required static files:
+ 
+- index.html
+- who-we-are.html
+- what-we-do.html
+- work.html
+- resources.html
+- contact.html
+- assets/css/preview.css
+- assets/js/preview.js
+- assets/images/
+ 
+The static preview must visually mirror the WordPress theme.
+ 
+The static preview must include:
+ 
+- matching navigation
+- matching dropdown panels
+- matching imagery
+- matching layouts
+- matching CTA sections
+- matching typography styling
+- matching responsive behavior
+ 
+Static preview navigation must work.
+ 
+Static preview dropdown panels must have solid readable backgrounds.
+ 
+Static preview must use only local assets.
+ 
+Static preview must not require WordPress or PHP.
+
+Static preview must have all proper styles.For page, buttons, everything.
+ 
+Accessibility requirements:
+ 
+Include:
+
+- skip link
+- semantic landmarks
+- proper heading order
+- visible focus states
+- keyboard-accessible navigation
+- aria-expanded on triggers
+- aria-controls where useful
+- readable contrast
+- reduced-motion support
+- accessible forms
+- accessible mobile drawer
+- no keyboard traps
+ 
+Security requirements:
+ 
+Use proper WordPress escaping:
+ 
+- esc_html()
+- esc_attr()
+- esc_url()
+- wp_kses_post()
+- the_permalink()
+- the_title_attribute()
+- body_class()
+- post_class()
+- wp_head()
+- wp_footer()
+- language_attributes()
+ 
+README requirements:
+ 
+Create README.md with:
+ 
+- theme overview
+- folder structure
+- features
+- page templates
+- header behavior
+- static preview notes
+- accessibility notes
+- no external runtime dependencies
+- activation instructions
+
+Theme Code Documentation:
+
+-Every file must have top of the line documentation, clearly stating everything that's going on, what it refernceses,
+Return values, etc. All functions should have a Purpose: Pre: Post:.
+ 
+Validation checklist:
+ 
+Before finishing, verify:
+ 
+- New next-version theme folder exists.
+- Older versions are untouched.
+- style.css has correct dynamic versioned theme name.
+- style.css has correct dynamic versioned text domain.
+- assets/css/theme.css exists and is non-trivial.
+- assets/js/theme.js exists and is non-trivial.
+- Header layout is logo, menu, Contact Us CTA.
+- Desktop dropdown panels open and close.
+- Dropdown panels are solid and readable, not transparent.
+- Dropdown panels have correct z-index and do not get buried.
+- Mobile menu opens and closes.
+- Mobile menu background is solid and readable.
+- Real local sample photography is used throughout the site.
+- Portfolio sections feel realistic and polished.
+- All nav links work.
+- Page templates exist and contain polished content.
+- Static preview exists.
+- Static preview navigation works.
+- docs/index.html links the new version.
+- No external runtime assets are required.
+- No OpenAI/API references exist.
+- No PHP syntax errors.
+- No console errors.
+ 
+
+Final definition of done:
+ 
+-The task is complete only when the next versioned MNY Photo theme exists, the matching static preview exists, the docs index links it, the header is polished and functional, all dropdown panels are solid and readable, the site uses real copyright-safe sample photography, all primary pages are filled with believable company-quality content, the CSS and JS files are non-trivial, and older theme versions remain untouched.
+- Theme + preview created for xN; docs/index.html updated
+- Header: mega panels + rail->content hover/focus switching + mobile drawer all work
+- theme.css/theme.js and preview.css/preview.js are non-trivial and referenced correctly
+- Preview pages exist and navigation works (no dead links)
+- Older theme versions untouched
+- Regenerate and commit zippedTheme/nolan-showcase-theme-xN.zip for the new/changed theme version.
