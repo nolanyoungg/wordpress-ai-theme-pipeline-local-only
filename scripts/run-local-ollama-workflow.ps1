@@ -89,6 +89,15 @@ function Replace-ObviousVersionRefs([string]$Root, [string]$OldSlug, [string]$Ne
 	foreach ($t in $targets) { Replace-TextInFile -Path $t -Replacements $rep }
 }
 
+function Should-UseStarterCopy {
+	# Default: do NOT clone the previous theme/preview forward.
+	# Cloning makes it too easy to publish near-identical versions unless the Builder rewrites heavily.
+	$v = $env:OLLAMA_USE_STARTER_COPY
+	if ($null -eq $v) { return $false }
+	$v = $v.Trim().ToLowerInvariant()
+	return ($v -in @("1", "true", "yes", "y", "on"))
+}
+
 $root = Get-RepoRoot
 $aiDir = Join-Path $root ".ai"
 New-Item -ItemType Directory -Force $aiDir | Out-Null
@@ -137,10 +146,14 @@ if ($latestVersion -ge 1) {
 	$latestThemeDir = "wp-content/themes/$latestSlug"
 	$latestPreviewDir = "docs/themes/$latestSlug"
 
-	Copy-Starter -Src (Join-Path $root $latestThemeDir) -Dst (Join-Path $root $THEME_DIR)
-	Copy-Starter -Src (Join-Path $root $latestPreviewDir) -Dst (Join-Path $root $PREVIEW_DIR)
-
-	Replace-ObviousVersionRefs -Root $root -OldSlug $latestSlug -NewSlug $THEME_SLUG -OldDisplay ("Nolan Young Showcase Theme X{0:D2}" -f $latestVersion) -NewDisplay $THEME_DISPLAY_NAME
+	if (Should-UseStarterCopy) {
+		Copy-Starter -Src (Join-Path $root $latestThemeDir) -Dst (Join-Path $root $THEME_DIR)
+		Copy-Starter -Src (Join-Path $root $latestPreviewDir) -Dst (Join-Path $root $PREVIEW_DIR)
+		Replace-ObviousVersionRefs -Root $root -OldSlug $latestSlug -NewSlug $THEME_SLUG -OldDisplay ("Nolan Young Showcase Theme X{0:D2}" -f $latestVersion) -NewDisplay $THEME_DISPLAY_NAME
+	} else {
+		New-Item -ItemType Directory -Force (Join-Path $root $THEME_DIR) | Out-Null
+		New-Item -ItemType Directory -Force (Join-Path $root $PREVIEW_DIR) | Out-Null
+	}
 } else {
 	New-Item -ItemType Directory -Force (Join-Path $root $THEME_DIR) | Out-Null
 	New-Item -ItemType Directory -Force (Join-Path $root $PREVIEW_DIR) | Out-Null

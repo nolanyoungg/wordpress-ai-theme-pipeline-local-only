@@ -92,28 +92,17 @@ try {
 
 	$content = New-Object System.Net.Http.StringContent($body, [System.Text.Encoding]::UTF8, "application/json")
 
-	$attempts = 3
+	$attempts = 1
 	$httpResp = $null
 	$respText = $null
 	$requestStart = Get-Date
 	Write-OllamaLog "Generate request starting. Attempts=$attempts Start=$($requestStart.ToString('yyyy-MM-dd HH:mm:ss'))"
-	for ($attempt = 1; $attempt -le $attempts; $attempt++) {
-		try {
-			$httpResp = $client.PostAsync("$baseUri/api/generate", $content).GetAwaiter().GetResult()
-			$respText = $httpResp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
-			break
-		} catch {
-			# Ollama can intermittently drop/timeout long generations; retry a couple times.
-			Write-OllamaLog "Generate attempt failed. Attempt=$attempt Error=$($_.Exception.Message)"
-			$isCanceled =
-				$_.Exception -is [System.Threading.Tasks.TaskCanceledException] -or
-				($_.Exception.Message -match '(?i)task was canceled')
-			if ($isCanceled -and $attempt -lt $attempts) {
-				Start-Sleep -Seconds ([Math]::Min(30, 5 * $attempt))
-				continue
-			}
-			throw
-		}
+	try {
+		$httpResp = $client.PostAsync("$baseUri/api/generate", $content).GetAwaiter().GetResult()
+		$respText = $httpResp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+	} catch {
+		Write-OllamaLog "Generate attempt failed. Attempt=1 Error=$($_.Exception.Message)"
+		throw
 	}
 	$requestEnd = Get-Date
 	$elapsedSeconds = [int][Math]::Round((New-TimeSpan -Start $requestStart -End $requestEnd).TotalSeconds)

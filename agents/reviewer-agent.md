@@ -42,3 +42,4 @@ Context:
 
 ## Latest theme reference (read-only)
 {{LATEST_CONTEXT}}
+
