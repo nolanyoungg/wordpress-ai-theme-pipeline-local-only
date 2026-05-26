@@ -43,6 +43,47 @@ function Get-ZipEntries([string]$ZipPath) {
 	}
 }
 
+function Get-ThemeVersion([string]$Slug) {
+	$m = [regex]::Match($Slug, '^nolan-young-showcase-theme-x(\d+)$')
+	if (-not $m.Success) { return $null }
+	return [int]$m.Groups[1].Value
+}
+
+function Get-ThemeSlugByVersion([string]$ThemesDir, [int]$Version) {
+	$slug = ("nolan-young-showcase-theme-x{0:D2}" -f $Version)
+	$p = Join-Path $ThemesDir $slug
+	if (Test-Path -LiteralPath $p) { return $slug }
+	return $null
+}
+
+function Assert-NotIdenticalToPreviousVersion([string]$Root, [string]$ThemesDir, [string]$DocsDir, [string]$Slug) {
+	$ver = Get-ThemeVersion $Slug
+	if ($null -eq $ver -or $ver -le 1) { return }
+
+	$prevSlug = Get-ThemeSlugByVersion -ThemesDir $ThemesDir -Version ($ver - 1)
+	if (-not $prevSlug) { return }
+
+	$themeCss = Join-Path (Join-Path $ThemesDir $Slug) "assets/css/theme.css"
+	$prevThemeCss = Join-Path (Join-Path $ThemesDir $prevSlug) "assets/css/theme.css"
+	if ((Test-Path -LiteralPath $themeCss) -and (Test-Path -LiteralPath $prevThemeCss)) {
+		$a = (Get-FileHash -Algorithm SHA256 -LiteralPath $themeCss).Hash
+		$b = (Get-FileHash -Algorithm SHA256 -LiteralPath $prevThemeCss).Hash
+		if ($a -eq $b) {
+			Write-Die "New theme appears identical to previous version (theme.css hash match): $Slug == $prevSlug"
+		}
+	}
+
+	$previewCss = Join-Path (Join-Path (Join-Path $DocsDir "themes") $Slug) "assets/css/preview.css"
+	$prevPreviewCss = Join-Path (Join-Path (Join-Path $DocsDir "themes") $prevSlug) "assets/css/preview.css"
+	if ((Test-Path -LiteralPath $previewCss) -and (Test-Path -LiteralPath $prevPreviewCss)) {
+		$a = (Get-FileHash -Algorithm SHA256 -LiteralPath $previewCss).Hash
+		$b = (Get-FileHash -Algorithm SHA256 -LiteralPath $prevPreviewCss).Hash
+		if ($a -eq $b) {
+			Write-Die "New preview appears identical to previous version (preview.css hash match): $Slug == $prevSlug"
+		}
+	}
+}
+
 $root = Get-RepoRoot
 $themesDir = Join-Path $root "wp-content/themes"
 $docsDir = Join-Path $root "docs"
@@ -129,6 +170,12 @@ foreach ($slug in $themes) {
 	$previewDir = Join-Path (Join-Path $docsDir "themes") $slug
 
 	Write-Output "==> $slug"
+
+	# Ensure the *new* version is meaningfully different from the immediately previous version.
+	# Only enforce for single-theme validation to avoid breaking existing history in bulk runs.
+	if ($isSingle) {
+		Assert-NotIdenticalToPreviousVersion -Root $root -ThemesDir $themesDir -DocsDir $docsDir -Slug $slug
+	}
 
 	foreach ($rel in $required) {
 		$p = Join-Path $themeDir $rel
