@@ -249,3 +249,104 @@ throw "No valid file blocks found. Builder/Fixer must output at least one ---FIL
 return $written
 }
 
+# MAIN EXECUTION
+# Composes the agent prompt, runs Ollama, saves raw output, and writes file blocks.
+$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..") | Select-Object -ExpandProperty Path
+$agentPromptPath = Join-Path $repoRoot (Join-Path "agents" "$Agent-agent.md")
+$aiDir = Join-Path $repoRoot ".ai"
+
+New-Item -ItemType Directory -Force $aiDir | Out-Null
+
+if (-not (Test-Path -LiteralPath $agentPromptPath)) {
+Write-Die "Agent prompt file not found: $agentPromptPath"
+}
+
+$agentInstructions = Get-Content -LiteralPath $agentPromptPath -Raw
+
+$latestContext = ""
+if ($LatestThemeSlug -and $LatestThemeDir -and $LatestPreviewDir) {
+$latestContext = Build-LatestContext `
+-Root $repoRoot `
+-ThemeSlug $LatestThemeSlug `
+-ThemeDir $LatestThemeDir `
+-PreviewDir $LatestPreviewDir
+}
+
+$timestamp = Get-Date -Format "yyyyMMdd-HHmmss-fff"
+$promptLogPath = Join-Path $aiDir "$Agent-prompt-$timestamp.md"
+$outputLogPath = Join-Path $aiDir "$Agent-output-$timestamp.md"
+
+$composedPrompt = @"
+LOCAL-ONLY OLLAMA AGENT RUN
+
+Agent:
+$Agent
+
+Model:
+$Model
+
+Theme slug:
+$ThemeSlug
+
+Theme display name:
+$ThemeDisplayName
+
+Theme version:
+$ThemeVersion
+
+Theme directory:
+$ThemeDir
+
+Preview directory:
+$PreviewDir
+
+Theme ZIP:
+$ThemeZip
+
+AGENT INSTRUCTIONS:
+$agentInstructions
+
+USER TASK:
+$UserTask
+
+LATEST CONTEXT:
+$latestContext
+"@
+
+Set-Content -LiteralPath $promptLogPath -Value $composedPrompt -Encoding UTF8
+
+try {
+$outputLines = $composedPrompt | & ollama run $Model 2>&1
+$exitCode = $LASTEXITCODE
+} catch {
+Set-Content -LiteralPath $outputLogPath -Value $_.Exception.Message -Encoding UTF8
+Write-Die "Ollama run failed before output could be captured. Details saved to: $outputLogPath"
+}
+
+$outputText = ($outputLines | Out-String)
+Set-Content -LiteralPath $outputLogPath -Value $outputText -Encoding UTF8
+
+if ($exitCode -ne 0) {
+Write-Die "Ollama exited with code $exitCode. Output saved to: $outputLogPath"
+}
+
+if ($Agent -in @("builder", "fixer")) {
+$trimmedOutput = $outputText.TrimStart()
+
+if (-not $trimmedOutput.StartsWith("---FILE:")) {
+Write-Die "Builder/Fixer must output file blocks only. Output saved to: $outputLogPath"
+}
+
+$writtenFiles = Write-FileBlocks `
+-RepoRoot $repoRoot `
+-Text $outputText `
+-ThemeSlug $ThemeSlug
+
+Write-Output "Wrote $($writtenFiles.Count) file block(s)."
+foreach ($writtenFile in $writtenFiles) {
+Write-Output "  - $writtenFile"
+}
+} else {
+Write-Output $outputText
+}
+
