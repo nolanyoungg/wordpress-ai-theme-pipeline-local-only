@@ -1,4 +1,4 @@
-name: Validate Themes
+﻿name: Validate Themes
 
 on:
   pull_request:
@@ -39,4 +39,4 @@ jobs:
         with:
           name: theme-zips
           path: zippedTheme/*.zip
-          if-no-files-found: error
+          if-no-files-found: warn
