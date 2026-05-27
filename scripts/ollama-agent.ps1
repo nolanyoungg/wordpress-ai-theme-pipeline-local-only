@@ -58,7 +58,8 @@ function Truncate([string]$Text, [int]$MaxChars) {
 	return ($Text.Substring(0, $MaxChars) + "`n...[truncated]...")
 }
 
-function Build-LatestContext([string]$Root, [string]$ThemeSlug, [string]$ThemeDir, [string]$PreviewDir) {
+function Build-LatestContext([string]$Root, [string]$ThemeSlug, [string]$ThemeDir, [string]$PreviewDir) {
+
 $disableLatestContext = $env:OLLAMA_DISABLE_LATEST_CONTEXT
 if ($disableLatestContext) {
 $disableLatestContext = $disableLatestContext.Trim().ToLowerInvariant()
@@ -205,10 +206,28 @@ if ($trimmedLine -match '^```(?:text|txt|markdown|md)?\s*$') {
 continue
 }
 
+# Handle a Markdown fence glued directly to the FILE marker.
+# Example: ```---FILE: path---
+if ($trimmedLine -match '^```\s*(---FILE:\s*.+)$') {
+$normalizedLines.Add($Matches[1]) | Out-Null
+continue
+}
+
+# Handle a Markdown fence glued directly after the END marker.
+# Example: ---END FILE---```
+if ($trimmedLine -match '^(---END FILE---)\s*```$') {
+$normalizedLines.Add($Matches[1]) | Out-Null
+continue
+}
+
 $normalizedLines.Add($line) | Out-Null
 }
 
 $normalized = ($normalizedLines -join "`n").Trim()
+
+# Defensive second pass in case fence markers appear after line normalization.
+$normalized = [regex]::Replace($normalized, '(?m)^```\s*(---FILE:\s*.+)$', '$1')
+$normalized = [regex]::Replace($normalized, '(?m)^(---END FILE---)\s*```$', '$1')
 
 $hasFileBlockStart = $normalized -match '(?m)^---FILE:\s*.+'
 $hasFileBlockEnd = $normalized -match '(?m)^---END FILE---\s*$'
@@ -221,6 +240,7 @@ $normalized = $normalized.TrimEnd() + "`n---END FILE---"
 
 return $normalized
 }
+
 function Write-FileBlocks([string]$RepoRoot, [string]$Text, [string]$ThemeSlug) {
 # Accept both:
 # ---FILE: path---
