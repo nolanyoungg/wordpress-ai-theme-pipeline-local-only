@@ -367,13 +367,13 @@ $latestContext
 
 Set-Content -LiteralPath $promptLogPath -Value $composedPrompt -Encoding UTF8
 
-$timeoutSeconds = 43200
+$timeoutSeconds = 1200
 
 if ($env:OLLAMA_REQUEST_TIMEOUT_SECONDS) {
 try {
 $timeoutSeconds = [int]$env:OLLAMA_REQUEST_TIMEOUT_SECONDS
 } catch {
-$timeoutSeconds = 43200
+$timeoutSeconds = 1200
 }
 }
 
@@ -390,6 +390,23 @@ $options.num_ctx = $numCtx
 }
 }
 
+$numPredict = 4096
+
+if ($env:OLLAMA_NUM_PREDICT) {
+try {
+$parsedNumPredict = [int]$env:OLLAMA_NUM_PREDICT
+if ($parsedNumPredict -gt 0) {
+$numPredict = $parsedNumPredict
+}
+} catch {
+$numPredict = 4096
+}
+}
+
+$options.num_predict = $numPredict
+$options.temperature = 0.15
+$options.top_p = 0.85
+$options.repeat_penalty = 1.08
 $generatePayload = @{
 model = $Model
 prompt = $composedPrompt
@@ -448,6 +465,7 @@ Write-Output "  - $writtenFile"
 } else {
 Write-Output $outputText
 }
+
 
 
 
