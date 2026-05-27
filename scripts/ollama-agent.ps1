@@ -189,6 +189,38 @@ throw "File block path contains illegal character '$invalidChar': $RelPath"
 return $path
 }
 
+function Normalize-FileBlockOutput([string]$Text) {
+if ([string]::IsNullOrWhiteSpace($Text)) {
+return $Text
+}
+
+$normalizedLines = New-Object System.Collections.Generic.List[string]
+$lines = $Text -split "(`r`n|`n|`r)"
+
+foreach ($line in $lines) {
+$trimmedLine = $line.Trim()
+
+# Drop Markdown fence-only wrapper lines. Keep real code/content lines.
+if ($trimmedLine -match '^```(?:text|txt|markdown|md)?\s*$') {
+continue
+}
+
+$normalizedLines.Add($line) | Out-Null
+}
+
+$normalized = ($normalizedLines -join "`n").Trim()
+
+$hasFileBlockStart = $normalized -match '(?m)^---FILE:\s*.+'
+$hasFileBlockEnd = $normalized -match '(?m)^---END FILE---\s*$'
+
+# Local models sometimes produce a valid single file block but omit the final end marker.
+# Treat EOF as the end of the final file block so one-file stages can continue safely.
+if ($hasFileBlockStart -and -not $hasFileBlockEnd) {
+$normalized = $normalized.TrimEnd() + "`n---END FILE---"
+}
+
+return $normalized
+}
 function Write-FileBlocks([string]$RepoRoot, [string]$Text, [string]$ThemeSlug) {
 # Accept both:
 # ---FILE: path---
@@ -367,6 +399,8 @@ Set-Content -LiteralPath $outputLogPath -Value $errorDetails -Encoding UTF8
 Write-Die "Ollama API generation failed. Details saved to: $outputLogPath"
 }
 
+$outputText = Normalize-FileBlockOutput -Text $outputText
+
 Set-Content -LiteralPath $outputLogPath -Value $outputText -Encoding UTF8
 
 if ([string]::IsNullOrWhiteSpace($outputText)) {
@@ -394,6 +428,8 @@ Write-Output "  - $writtenFile"
 } else {
 Write-Output $outputText
 }
+
+
 
 
 
