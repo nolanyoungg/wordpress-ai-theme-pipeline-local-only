@@ -1,10 +1,11 @@
-param(
+﻿param(
 	[Parameter(Mandatory = $false)]
 	[string]$ThemeSlug = ""
 )
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
+. (Join-Path $PSScriptRoot "theme-structure.ps1")
 
 function Write-Die([string]$Message) {
 	throw $Message
@@ -43,6 +44,23 @@ function Get-ZipEntries([string]$ZipPath) {
 	}
 }
 
+function Assert-StylesheetHasContent([string]$Path, [string]$Label) {
+if (-not (Test-Path -LiteralPath $Path)) {
+Write-Die "Missing stylesheet: $Path"
+}
+
+$css = Get-Content -LiteralPath $Path -Raw
+
+if ([string]::IsNullOrWhiteSpace($css)) {
+Write-Die "$Label stylesheet is empty: $Path"
+}
+
+# Require at least one normal CSS rule block with a declaration.
+# This avoids arbitrary byte-size checks while still rejecting empty/filler files.
+if ($css -notmatch '(?s)[^{]+\{[^{}]+:[^{}]+;?[^{}]*\}') {
+Write-Die "$Label stylesheet does not contain a CSS rule with a declaration: $Path"
+}
+}
 function Get-ThemeVersion([string]$Slug) {
 	$m = [regex]::Match($Slug, '^nolan-young-showcase-theme-x(\d+)$')
 	if (-not $m.Success) { return $null }
@@ -63,8 +81,8 @@ function Assert-NotIdenticalToPreviousVersion([string]$Root, [string]$ThemesDir,
 	$prevSlug = Get-ThemeSlugByVersion -ThemesDir $ThemesDir -Version ($ver - 1)
 	if (-not $prevSlug) { return }
 
-	$themeCss = Join-Path (Join-Path $ThemesDir $Slug) "assets/css/theme.css"
-	$prevThemeCss = Join-Path (Join-Path $ThemesDir $prevSlug) "assets/css/theme.css"
+	$themeCss = Join-Path (Join-Path $ThemesDir $Slug) "assets/css/main.css"
+	$prevThemeCss = Join-Path (Join-Path $ThemesDir $prevSlug) "assets/css/main.css"
 	if ((Test-Path -LiteralPath $themeCss) -and (Test-Path -LiteralPath $prevThemeCss)) {
 		$a = (Get-FileHash -Algorithm SHA256 -LiteralPath $themeCss).Hash
 		$b = (Get-FileHash -Algorithm SHA256 -LiteralPath $prevThemeCss).Hash
@@ -139,26 +157,7 @@ if (-not $isSingle) {
 	Get-ChildItem -LiteralPath $zipDir -Filter "*.zip" -File -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
 }
 
-$required = @(
-	"style.css",
-	"functions.php",
-	"index.php",
-	"header.php",
-	"footer.php",
-	"front-page.php",
-	"page.php",
-	"single.php",
-	"archive.php",
-	"search.php",
-	"404.php",
-	"comments.php",
-	"template-parts/content.php",
-	"template-parts/content-page.php",
-	"template-parts/content-none.php",
-	"assets/css/theme.css",
-	"assets/js/theme.js",
-	"README.md"
-)
+$required = Get-RequiredThemeFiles -ThemeSlug "nolan-young-showcase-theme-x00"
 
 $phpAvailable = Has-Command "php"
 
@@ -189,25 +188,21 @@ foreach ($slug in $themes) {
 	if ($style -notmatch '(?m)^Theme Name:\s*.+$') {
 		Write-Die "Missing Theme Name header: $stylePath"
 	}
-
-	$themeCssPath = Join-Path $themeDir "assets/css/theme.css"
-	$cssBytes = (Get-Item -LiteralPath $themeCssPath).Length
-	if ($cssBytes -lt 800) {
-		Write-Die "Theme stylesheet too small ($cssBytes bytes): $themeCssPath"
-	}
+	$themeCssPath = Join-Path $themeDir "assets/css/main.css"
+	Assert-StylesheetHasContent -Path $themeCssPath -Label "Theme"
 
 	$themeFiles = Get-ChildItem -LiteralPath $themeDir -Recurse -File
 	$hasCssRef = $false
 	foreach ($f in $themeFiles) {
 		try {
 			$c = Get-Content -LiteralPath $f.FullName -Raw -ErrorAction Stop
-			if ($c -match [regex]::Escape("assets/css/theme.css")) { $hasCssRef = $true; break }
+			if ($c -match [regex]::Escape("assets/css/main.css")) { $hasCssRef = $true; break }
 		} catch {
 			# ignore binary reads
 		}
 	}
 	if (-not $hasCssRef) {
-		Write-Die "Theme does not reference assets/css/theme.css: $themeDir"
+		Write-Die "Theme does not reference assets/css/main.css: $themeDir"
 	}
 
 	$hasEnqueue = $false
@@ -245,11 +240,7 @@ foreach ($slug in $themes) {
 	if ($previewHtml -notmatch "assets/css/preview\.css") {
 		Write-Die "Preview HTML does not link preview.css: $previewIndex"
 	}
-
-	$previewCssBytes = (Get-Item -LiteralPath $previewCss).Length
-	if ($previewCssBytes -lt 800) {
-		Write-Die "Preview stylesheet too small ($previewCssBytes bytes): $previewCss"
-	}
+	Assert-StylesheetHasContent -Path $previewCss -Label "Preview"
 
 	# Package ZIP for this theme.
 	$zipPath = Join-Path $zipDir ("$slug.zip")
@@ -270,8 +261,8 @@ foreach ($slug in $themes) {
 	$mustHave = @(
 		"$slug/style.css",
 		"$slug/functions.php",
-		"$slug/assets/css/theme.css",
-		"$slug/assets/js/theme.js"
+		"$slug/assets/css/main.css",
+		"$slug/assets/js/bundle.js"
 	)
 	foreach ($m in $mustHave) {
 		if ($entriesNorm -notcontains $m) {
@@ -281,3 +272,7 @@ foreach ($slug in $themes) {
 }
 
 Write-Output "OK"
+
+
+
+
