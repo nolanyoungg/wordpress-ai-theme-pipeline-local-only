@@ -374,10 +374,11 @@ Write-Die "Ollama API returned empty output. Output saved to: $outputLogPath"
 }
 
 if ($Agent -in @("builder", "fixer")) {
-$trimmedOutput = $outputText.TrimStart()
+$hasFileBlockStart = $outputText -match '(?m)^---FILE:\s*.+'
+$hasFileBlockEnd = $outputText -match '(?m)^---END FILE---\s*$'
 
-if (-not $trimmedOutput.StartsWith("---FILE:")) {
-Write-Die "Builder/Fixer must output file blocks only. Output saved to: $outputLogPath"
+if (-not ($hasFileBlockStart -and $hasFileBlockEnd)) {
+Write-Die "Builder/Fixer output did not contain a complete file block. Output saved to: $outputLogPath"
 }
 
 $writtenFiles = Write-FileBlocks `
@@ -393,6 +394,7 @@ Write-Output "  - $writtenFile"
 } else {
 Write-Output $outputText
 }
+
 
 
 
