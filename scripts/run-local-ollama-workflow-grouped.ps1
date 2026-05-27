@@ -321,7 +321,58 @@ Write-Output "Running Builder Agent stage: $stageName"
 -LatestThemeSlug $latestSlug `
 -LatestThemeDir $latestThemeDir `
 -LatestPreviewDir $latestPreviewDir | Out-Null
+
+foreach ($stageFile in $stageFiles) {
+$stageFilePath = Join-Path $root $stageFile
+
+if (-not (Test-Path -LiteralPath $stageFilePath)) {
+Write-Die "Builder stage '$stageName' did not generate required listed file: $stageFile"
 }
+
+$stageFileItem = Get-Item -LiteralPath $stageFilePath -ErrorAction Stop
+
+if ($stageFileItem.Length -le 0) {
+Write-Die "Builder stage '$stageName' generated an empty file: $stageFile"
+}
+}
+}
+# Builder-authored output quality gates.
+# These checks happen before deterministic scaffold fallback so weak or skipped Builder output cannot pass as a real theme.
+$requiredDocsLink = "themes/$THEME_SLUG/index.html"
+
+if (-not (Test-Path -LiteralPath $docsIndexPath)) {
+Write-Die "Docs gallery index was not generated: docs/index.html"
+}
+
+$docsIndexAfterBuilder = Get-Content -LiteralPath $docsIndexPath -Raw
+
+if ($docsIndexAfterBuilder -notmatch [regex]::Escape($requiredDocsLink)) {
+Write-Die "Docs gallery index does not include required theme preview link: $requiredDocsLink"
+}
+
+$previewIndexPath = Join-Path $root (Join-Path $PREVIEW_DIR "index.html")
+
+if (-not (Test-Path -LiteralPath $previewIndexPath)) {
+Write-Die "Static preview index was not generated: $PREVIEW_DIR/index.html"
+}
+
+$previewIndexAfterBuilder = Get-Content -LiteralPath $previewIndexPath -Raw
+
+$requiredPreviewTerms = @(
+"What We Do",
+"Who We Are",
+"Our Work",
+"Resources",
+"Contact Us",
+"nolan-menu"
+)
+
+foreach ($requiredPreviewTerm in $requiredPreviewTerms) {
+if ($previewIndexAfterBuilder -notmatch [regex]::Escape($requiredPreviewTerm)) {
+Write-Die "Static preview index is missing required preview/header term: $requiredPreviewTerm"
+}
+}
+
 $themeReadmePath = Join-Path $root (Join-Path $THEME_DIR "README.md")
 
 $themeReadmeLines = @(
@@ -410,6 +461,8 @@ Write-Output "  git add -f $THEME_DIR $PREVIEW_DIR $THEME_ZIP"
 Write-Output "  git add docs/index.html"
 Write-Output "  git commit -m `"Add $THEME_SLUG (Ollama grouped local-only)`""
 Write-Output "  git push"
+
+
 
 
 
