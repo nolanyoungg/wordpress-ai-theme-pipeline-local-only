@@ -109,10 +109,14 @@ $latestPreviewDir = "docs/themes/$latestSlug"
 
 $stages = @(
 @{
-Name = "WordPress core PHP files"
+Name = "Core theme bootstrap files"
 Files = @(
 "wp-content/themes/$THEME_SLUG/style.css",
 "wp-content/themes/$THEME_SLUG/functions.php",
+"wp-content/themes/$THEME_SLUG/theme.json",
+"wp-content/themes/$THEME_SLUG/README.md",
+"wp-content/themes/$THEME_SLUG/.editorconfig",
+"wp-content/themes/$THEME_SLUG/.gitignore",
 "wp-content/themes/$THEME_SLUG/index.php",
 "wp-content/themes/$THEME_SLUG/header.php",
 "wp-content/themes/$THEME_SLUG/footer.php",
@@ -122,17 +126,116 @@ Files = @(
 "wp-content/themes/$THEME_SLUG/archive.php",
 "wp-content/themes/$THEME_SLUG/search.php",
 "wp-content/themes/$THEME_SLUG/404.php",
-"wp-content/themes/$THEME_SLUG/comments.php",
-"wp-content/themes/$THEME_SLUG/template-parts/content.php",
-"wp-content/themes/$THEME_SLUG/template-parts/content-page.php",
-"wp-content/themes/$THEME_SLUG/template-parts/content-none.php"
+"wp-content/themes/$THEME_SLUG/comments.php"
 )
 }
 @{
-Name = "WordPress theme CSS and JavaScript assets"
+Name = "Theme setup and inc files"
 Files = @(
-"wp-content/themes/$THEME_SLUG/assets/css/main.css",
+"wp-content/themes/$THEME_SLUG/inc/setup.php",
+"wp-content/themes/$THEME_SLUG/inc/enqueue.php",
+"wp-content/themes/$THEME_SLUG/inc/template-tags.php",
+"wp-content/themes/$THEME_SLUG/inc/helpers.php",
+"wp-content/themes/$THEME_SLUG/inc/custom-post-types.php",
+"wp-content/themes/$THEME_SLUG/inc/customizer.php"
+)
+}
+@{
+Name = "Homepage template parts"
+Files = @(
+"wp-content/themes/$THEME_SLUG/template-parts/content-hero.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-brand-statement.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-featured-work.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-services.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-process.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-style-pillars.php"
+)
+}
+@{
+Name = "Secondary template parts"
+Files = @(
+"wp-content/themes/$THEME_SLUG/template-parts/content-testimonials.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-resources-preview.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-final-cta.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-footer-widgets.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-none.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-page.php",
+"wp-content/themes/$THEME_SLUG/template-parts/content-single.php"
+)
+}
+@{
+Name = "Page templates"
+Files = @(
+"wp-content/themes/$THEME_SLUG/page-templates/template-who-we-are.php",
+"wp-content/themes/$THEME_SLUG/page-templates/template-what-we-do.php",
+"wp-content/themes/$THEME_SLUG/page-templates/template-our-work.php",
+"wp-content/themes/$THEME_SLUG/page-templates/template-resources.php",
+"wp-content/themes/$THEME_SLUG/page-templates/template-contact.php"
+)
+}
+@{
+Name = "SCSS abstracts and base"
+Files = @(
+"wp-content/themes/$THEME_SLUG/src/scss/main.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/abstracts/_variables.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/abstracts/_mixins.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/abstracts/_functions.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/base/_reset.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/base/_typography.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/base/_accessibility.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/base/_forms.scss"
+)
+}
+@{
+Name = "SCSS components and layout"
+Files = @(
+"wp-content/themes/$THEME_SLUG/src/scss/components/_buttons.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/components/_cards.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/components/_forms.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/components/_badges.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/components/_accordion.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/components/_carousel.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/components/_portfolio-filter.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/components/_before-after.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/layout/_container.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/layout/_header.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/layout/_footer.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/layout/_grid.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/layout/_sections.scss"
+)
+}
+@{
+Name = "SCSS page partials"
+Files = @(
+"wp-content/themes/$THEME_SLUG/src/scss/pages/_home.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/pages/_contact.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/pages/_services.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/pages/_work.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/pages/_resources.scss",
+"wp-content/themes/$THEME_SLUG/src/scss/pages/_who-we-are.scss"
+)
+}
+@{
+Name = "Runtime CSS"
+Files = @(
+"wp-content/themes/$THEME_SLUG/assets/css/main.css"
+)
+}
+@{
+Name = "Source and runtime JavaScript"
+Files = @(
+"wp-content/themes/$THEME_SLUG/src/js/main.js",
 "wp-content/themes/$THEME_SLUG/assets/js/bundle.js"
+)
+}
+@{
+Name = "Build blocks icons and package files"
+Files = @(
+"wp-content/themes/$THEME_SLUG/assets/icons/README.md",
+"wp-content/themes/$THEME_SLUG/blocks/README.md",
+"wp-content/themes/$THEME_SLUG/build/webpack.config.js",
+"wp-content/themes/$THEME_SLUG/package.json",
+"wp-content/themes/$THEME_SLUG/package-lock.json"
 )
 }
 @{
@@ -303,6 +406,8 @@ Write-Output "  git add -f $THEME_DIR $PREVIEW_DIR $THEME_ZIP"
 Write-Output "  git add docs/index.html"
 Write-Output "  git commit -m `"Add $THEME_SLUG (Ollama grouped local-only)`""
 Write-Output "  git push"
+
+
 
 
 
