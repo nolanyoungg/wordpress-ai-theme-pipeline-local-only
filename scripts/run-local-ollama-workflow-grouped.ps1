@@ -287,9 +287,13 @@ Rules for this stage:
 - Do not output explanations.
 - Do not output files outside the listed paths.
 - Do not output files from other stages.
-- Each listed file must be complete and production-ready.
+- Generate every listed file for this stage.
+- Do not skip listed files.
+- Do not leave files blank.
+- Do not use placeholder-only content.
+- Each listed PHP, CSS, SCSS, JS, JSON, Markdown, and config file must be complete and maintainable.
 - Use local-only assets and vanilla WordPress/PHP/HTML/CSS/JS.
-
+- The deterministic scaffold is only a fallback. Your job is to fully author the files listed for this stage.
 Required WordPress asset-loading rules:
 - If this stage includes functions.php, functions.php must call wp_enqueue_style.
 - If this stage includes functions.php, functions.php must contain the exact literal text assets/css/main.css.
@@ -406,6 +410,8 @@ Write-Output "  git add -f $THEME_DIR $PREVIEW_DIR $THEME_ZIP"
 Write-Output "  git add docs/index.html"
 Write-Output "  git commit -m `"Add $THEME_SLUG (Ollama grouped local-only)`""
 Write-Output "  git push"
+
+
 
 
 
