@@ -1,435 +1,152 @@
 ﻿
 
-<!doctype html>
+
+
+
+
+
+
+<!DOCTYPE html>
+
+
+
+
+
+
 
 
 <html lang="en">
 
 
+
+
+
+
+
+
 <head>
 
 
-    <meta charset="utf-8">
 
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-    <title>Nolan Young Showcase Themes</title>
 
 
-    <style>
+    <meta charset="UTF-8">
 
 
-        :root {
 
 
-            --bg: #fffaf3;
 
 
-            --bg2: #f7f1e7;
 
 
-            --text: #1f1c18;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-            --muted: #645b50;
 
 
-            --line: rgba(31, 28, 24, .12);
 
 
-            --accent: #b99558;
 
 
-            --accent2: #b66f4f;
+    <title>Theme Showcase</title>
 
 
-            --card: #ffffff;
 
 
-            --radius: 18px;
 
 
-            --max: 1120px;
 
 
-            --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+    <link rel="stylesheet" href="assets/css/preview.css">
 
 
-            --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
 
-        }
 
 
-        * {
-
-
-            box-sizing: border-box
-
-
-        }
-
-
-        body {
-
-
-            margin: 0;
-
-
-            font-family: var(--sans);
-
-
-            color: var(--text);
-
-
-            background:
-
-
-                radial-gradient(1000px 700px at 10% -10%, rgba(185, 149, 88, .14), transparent 58%),
-
-
-                radial-gradient(900px 700px at 90% 0%, rgba(182, 111, 79, .10), transparent 58%),
-
-
-                linear-gradient(180deg, var(--bg), var(--bg2) 60%, var(--bg));
-
-
-            line-height: 1.6;
-
-
-        }
-
-
-        a {
-
-
-            color: inherit
-
-
-        }
-
-
-        .container {
-
-
-            width: min(var(--max), calc(100% - 48px));
-
-
-            margin: 72px auto
-
-
-        }
-
-
-        .shell {
-
-
-            border: 1px solid var(--line);
-
-
-            border-radius: var(--radius);
-
-
-            background: rgba(255, 255, 255, .82);
-
-
-            box-shadow: 0 24px 60px rgba(31, 28, 24, .08);
-
-
-            padding: 28px;
-
-
-        }
-
-
-        .kicker {
-
-
-            margin: 0 0 10px;
-
-
-            font-family: var(--mono);
-
-
-            font-size: 12px;
-
-
-            letter-spacing: .14em;
-
-
-            text-transform: uppercase;
-
-
-            color: var(--muted);
-
-
-        }
-
-
-        h1 {
-
-
-            margin: 0 0 14px;
-
-
-            font-size: clamp(32px, 3vw, 54px);
-
-
-            line-height: 1.04;
-
-
-        }
-
-
-        p {
-
-
-            margin: 0 0 14px;
-
-
-            max-width: 70ch;
-
-
-            color: rgba(31, 28, 24, .82)
-
-
-        }
-
-
-        .grid {
-
-
-            display: grid;
-
-
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-
-
-            gap: 18px;
-
-
-            margin-top: 24px;
-
-
-        }
-
-
-        .card {
-
-
-            display: block;
-
-
-            border: 1px solid var(--line);
-
-
-            border-radius: 16px;
-
-
-            background: var(--card);
-
-
-            padding: 22px;
-
-
-            text-decoration: none;
-
-
-            transition: transform .18s ease, box-shadow .18s ease;
-
-
-        }
-
-
-        .card:hover,
-
-
-        .card:focus-visible {
-
-
-            transform: translateY(-2px);
-
-
-            box-shadow: 0 18px 44px rgba(31, 28, 24, .10);
-
-
-            outline: 2px solid rgba(185, 149, 88, .55);
-
-
-            outline-offset: 3px;
-
-
-        }
-
-
-        .card h2 {
-
-
-            margin: 0 0 8px;
-
-
-            font-size: 20px
-
-
-        }
-
-
-        .card p {
-
-
-            margin: 0;
-
-
-            color: rgba(31, 28, 24, .74)
-
-
-        }
-
-
-        .badge {
-
-
-            display: inline-flex;
-
-
-            margin-bottom: 16px;
-
-
-            border: 1px solid rgba(185, 149, 88, .34);
-
-
-            border-radius: 999px;
-
-
-            padding: 6px 10px;
-
-
-            color: #5e4a2d;
-
-
-            font-size: 12px;
-
-
-            font-weight: 700;
-
-
-            text-transform: uppercase;
-
-
-            letter-spacing: .08em;
-
-
-        }
-
-
-        .footer {
-
-
-            margin-top: 24px;
-
-
-            padding-top: 18px;
-
-
-            border-top: 1px solid var(--line);
-
-
-            color: rgba(31, 28, 24, .72);
-
-
-            font-size: 13px;
-
-
-        }
-
-
-        @media (max-width: 720px) {
-
-
-            .container {
-
-
-                width: calc(100% - 32px);
-
-
-                margin: 32px auto
-
-
-            }
-
-
-            .shell {
-
-
-                padding: 20px
-
-
-            }
-
-
-        }
-
-
-    </style>
 
 
 </head>
 
 
+
+
+
+
+
+
 <body>
 
 
-    <main class="container">
-
-
-        <section class="shell">
-
-
-            <p class="kicker">GitHub Pages Gallery</p>
-
-
-            <h1>Nolan Young Showcase Themes</h1>
-
-
-            <p>Local-only Ollama-generated WordPress themes with matching static previews.</p>
 
 
 
 
 
-            <div class="grid" aria-label="Available theme previews">
-                <a class="card" href="#">
-                    <span class="badge">No themes yet</span>
-                    <h2>Generate your first theme locally</h2>
-                    <p>Run the local Ollama workflow to create <code>nolan-young-showcase-theme-x01</code>, then push to <code>main</code> to publish to GitHub Pages.</p>
-                    <p><strong>Command:</strong> scripts/run-local-ollama-workflow.ps1</p>
-                </a>
-            </div>
+
+    <div class="theme-card">
 
 
 
 
 
-            <div class="footer">
 
 
-                <span>Theme source is packaged separately under <code>zippedTheme/</code>.</span>
+
+        <h2>Nolan Young Showcase Theme X01</h2>
 
 
-            </div>
 
 
-        </section>
 
 
-    </main>
+
+
+        <p>A premium photography studio WordPress theme.</p>
+
+
+
+
+
+
+
+
+        <a href="themes/nolan-young-showcase-theme-x01/index.html">View Preview</a>
+
+
+
+
+
+
+
+
+    </div>
+
+
+
+
+
+
 
 
 </body>
 
 
+
+
+
+
+
+
 </html>
+
+
+
+
+
+
 
 
