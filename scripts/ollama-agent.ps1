@@ -160,31 +160,65 @@ function Assert-AllowedRelativePath([string]$RepoRoot, [string]$RelPath, [string
 	}
 }
 
-function Write-FileBlocks([string]$RepoRoot, [string]$Text, [string]$ThemeSlug) {
-# Builder/Fixer models sometimes add harmless wrapper text before or after valid file blocks.
-# Only matched file blocks are written, and every path is still checked by Assert-AllowedRelativePath.
+function Normalize-FileBlockPath([string]$RelPath) {
+$path = $RelPath.Trim()
 
-$textToParse = $Text.Trim()
+# Remove common model-added wrappers around paths.
+$path = $path.Trim('"')
+$path = $path.Trim("'")
+$path = $path.Trim([char]0x60)
+$path = $path.Trim()
 
-# Remove standalone markdown fence lines if the model wrapped the response.
-$textToParse = [regex]::Replace($textToParse, '(?m)^```(?:text|markdown|md|php|html|css|js|javascript|powershell)?\s*$', '')
-$textToParse = [regex]::Replace($textToParse, '(?m)^```\s*$', '')
+# Normalize separators.
+$path = $path -replace '\\', '/'
 
-$pattern = '(?ms)^---FILE:\s*(.+?)\s*---\r?\n(.*?)\r?\n---END FILE---\s*'
-$matches = [regex]::Matches($textToParse, $pattern)
-
-if ($matches.Count -eq 0) {
-throw "No valid file blocks found. Builder/Fixer must output at least one ---FILE: ... ---END FILE--- block."
+if ([string]::IsNullOrWhiteSpace($path)) {
+throw "File block path is empty."
 }
 
+if ($path -match '[\r\n]') {
+throw "File block path contains a newline: $RelPath"
+}
+
+foreach ($invalidChar in [System.IO.Path]::GetInvalidPathChars()) {
+if ($path.Contains($invalidChar)) {
+throw "File block path contains illegal character '$invalidChar': $RelPath"
+}
+}
+
+return $path
+}
+
+function Write-FileBlocks([string]$RepoRoot, [string]$Text, [string]$ThemeSlug) {
+# Accept both:
+# ---FILE: path---
+# ---FILE: path
+#
+# The model often omits the closing --- after the file path.
+# We still require a matching ---END FILE--- before writing anything.
+
+$lines = $Text -split "(`r`n|`n|`r)"
+$inBlock = $false
+$curPath = $null
+$buf = New-Object System.Collections.Generic.List[string]
 $written = New-Object System.Collections.Generic.List[string]
 
-foreach ($match in $matches) {
-$rel = $match.Groups[1].Value.Trim()
-$content = $match.Groups[2].Value
+for ($i = 0; $i -lt $lines.Length; $i++) {
+$line = $lines[$i]
 
-Assert-AllowedRelativePath -RepoRoot $RepoRoot -RelPath $rel -ThemeSlug $ThemeSlug
+if (-not $inBlock) {
+if ($line -match '^---FILE:\s*(.+?)\s*(?:---)?\s*$') {
+$curPath = Normalize-FileBlockPath -RelPath $Matches[1]
+Assert-AllowedRelativePath -RepoRoot $RepoRoot -RelPath $curPath -ThemeSlug $ThemeSlug
+$inBlock = $true
+$buf.Clear() | Out-Null
+}
 
+continue
+}
+
+if ($line.Trim() -eq '---END FILE---') {
+$rel = $curPath
 $dest = Join-Path $RepoRoot $rel
 $destDir = Split-Path -Parent $dest
 
@@ -192,58 +226,26 @@ if ($destDir) {
 New-Item -ItemType Directory -Force $destDir | Out-Null
 }
 
-$content | Set-Content -Encoding UTF8 -Path $dest
+($buf -join "`n") | Set-Content -Encoding UTF8 -Path $dest
 $written.Add($rel) | Out-Null
+
+$inBlock = $false
+$curPath = $null
+$buf.Clear() | Out-Null
+continue
+}
+
+$buf.Add($line) | Out-Null
+}
+
+if ($inBlock) {
+throw "Unterminated file block for path: $curPath"
+}
+
+if ($written.Count -eq 0) {
+throw "No valid file blocks found. Builder/Fixer must output at least one ---FILE: ... ---END FILE--- block."
 }
 
 return $written
 }
-$root = Resolve-Path (Join-Path $PSScriptRoot "..") | Select-Object -ExpandProperty Path
-$aiDir = Join-Path $root ".ai"
-New-Item -ItemType Directory -Force $aiDir | Out-Null
-$agentsDir = Join-Path $root "agents"
-
-$agentsMd = Read-TextOrEmpty (Join-Path $root "AGENTS.md")
-if (-not $agentsMd) { Write-Die "Missing AGENTS.md at repo root." }
-
-$templatePath = Join-Path $agentsDir ("$Agent-agent.md")
-if (-not (Test-Path -LiteralPath $templatePath)) { Write-Die "Missing prompt template: $templatePath" }
-$template = Get-Content -LiteralPath $templatePath -Raw
-
-$latestCtx = Build-LatestContext -Root $root -ThemeSlug $LatestThemeSlug -ThemeDir $LatestThemeDir -PreviewDir $LatestPreviewDir
-
-$vars = @{
-	"AGENTS_MD" = $agentsMd
-	"USER_TASK" = $UserTask
-	"THEME_SLUG" = $ThemeSlug
-	"THEME_DISPLAY_NAME" = $ThemeDisplayName
-	"THEME_VERSION" = "$ThemeVersion"
-	"THEME_DIR" = $ThemeDir
-	"PREVIEW_DIR" = $PreviewDir
-	"THEME_ZIP" = $ThemeZip
-	"LATEST_CONTEXT" = $latestCtx
-}
-
-$prompt = Expand-Template -Template $template -Vars $vars
-
-$stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$promptOut = Join-Path $aiDir ("$Agent-prompt-$stamp.md")
-$resultOut = Join-Path $aiDir ("$Agent-output-$stamp.md")
-
-$prompt | Set-Content -Encoding UTF8 -Path $promptOut
-
-& (Join-Path $PSScriptRoot "invoke-ollama.ps1") -PromptText $prompt -Model $Model -OutputPath (".ai/" + (Split-Path -Leaf $resultOut)) | Out-Null
-
-$result = Get-Content -LiteralPath $resultOut -Raw
-
-if ($Agent -in @("builder", "fixer")) {
-	$written = Write-FileBlocks -RepoRoot $root -Text $result -ThemeSlug $ThemeSlug
-	$manifestPath = Join-Path $aiDir ("$Agent-written-files-$stamp.txt")
-	($written | Sort-Object) | Set-Content -Encoding UTF8 -Path $manifestPath
-	Write-Output $manifestPath
-} else {
-	Write-Output $resultOut
-}
-
-
 
