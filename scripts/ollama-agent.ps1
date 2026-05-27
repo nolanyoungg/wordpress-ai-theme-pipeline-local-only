@@ -385,6 +385,7 @@ $writtenFiles = Write-FileBlocks `
 -Text $outputText `
 -ThemeSlug $ThemeSlug
 
+$writtenFiles = @($writtenFiles)
 Write-Output "Wrote $($writtenFiles.Count) file block(s)."
 foreach ($writtenFile in $writtenFiles) {
 Write-Output "  - $writtenFile"
@@ -392,5 +393,6 @@ Write-Output "  - $writtenFile"
 } else {
 Write-Output $outputText
 }
+
 
 
