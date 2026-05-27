@@ -254,6 +254,29 @@ Files = @(
 }
 )
 
+# Expand grouped stage definitions into one-file Builder calls.
+# This is intentionally slower, but it gives the local 14B model one file at a time
+# and prevents large stages from skipping required files.
+$expandedStages = @()
+
+foreach ($stage in $stages) {
+$originalStageName = [string]$stage.Name
+$originalStageFiles = @($stage.Files)
+$totalStageFiles = $originalStageFiles.Count
+$fileNumber = 1
+
+foreach ($stageFile in $originalStageFiles) {
+$expandedStages += @{
+Name = "$originalStageName file $fileNumber of $totalStageFiles"
+Files = @($stageFile)
+}
+
+$fileNumber++
+}
+}
+
+$stages = $expandedStages
+
 try {
 foreach ($stage in $stages) {
 $stageName = [string]$stage.Name
@@ -287,7 +310,7 @@ Rules for this stage:
 - Do not output explanations.
 - Do not output files outside the listed paths.
 - Do not output files from other stages.
-- Generate every listed file for this stage.
+- Generate every listed file for this stage. In one-file stages, generate exactly the single listed file and nothing else.
 - Do not skip listed files.
 - Do not leave files blank.
 - Do not use placeholder-only content.
@@ -461,6 +484,8 @@ Write-Output "  git add -f $THEME_DIR $PREVIEW_DIR $THEME_ZIP"
 Write-Output "  git add docs/index.html"
 Write-Output "  git commit -m `"Add $THEME_SLUG (Ollama grouped local-only)`""
 Write-Output "  git push"
+
+
 
 
 
