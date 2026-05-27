@@ -315,19 +315,62 @@ $latestContext
 
 Set-Content -LiteralPath $promptLogPath -Value $composedPrompt -Encoding UTF8
 
+$timeoutSeconds = 43200
+
+if ($env:OLLAMA_REQUEST_TIMEOUT_SECONDS) {
 try {
-$outputLines = $composedPrompt | & ollama run $Model 2>&1
-$exitCode = $LASTEXITCODE
+$timeoutSeconds = [int]$env:OLLAMA_REQUEST_TIMEOUT_SECONDS
 } catch {
-Set-Content -LiteralPath $outputLogPath -Value $_.Exception.Message -Encoding UTF8
-Write-Die "Ollama run failed before output could be captured. Details saved to: $outputLogPath"
+$timeoutSeconds = 43200
+}
 }
 
-$outputText = ($outputLines | Out-String)
+$options = @{}
+
+if ($env:OLLAMA_CONTEXT_LENGTH) {
+try {
+$numCtx = [int]$env:OLLAMA_CONTEXT_LENGTH
+if ($numCtx -gt 0) {
+$options.num_ctx = $numCtx
+}
+} catch {
+# Ignore invalid context values and let Ollama use its default.
+}
+}
+
+$generatePayload = @{
+model = $Model
+prompt = $composedPrompt
+stream = $false
+options = $options
+}
+
+$generateJson = $generatePayload | ConvertTo-Json -Depth 10
+
+try {
+$response = Invoke-RestMethod `
+-Method Post `
+-Uri "http://localhost:11434/api/generate" `
+-ContentType "application/json" `
+-Body $generateJson `
+-TimeoutSec $timeoutSeconds
+
+$outputText = [string]$response.response
+} catch {
+$errorDetails = $_.Exception.Message
+
+if ($_.ErrorDetails -and $_.ErrorDetails.Message) {
+$errorDetails += "`n`n" + $_.ErrorDetails.Message
+}
+
+Set-Content -LiteralPath $outputLogPath -Value $errorDetails -Encoding UTF8
+Write-Die "Ollama API generation failed. Details saved to: $outputLogPath"
+}
+
 Set-Content -LiteralPath $outputLogPath -Value $outputText -Encoding UTF8
 
-if ($exitCode -ne 0) {
-Write-Die "Ollama exited with code $exitCode. Output saved to: $outputLogPath"
+if ([string]::IsNullOrWhiteSpace($outputText)) {
+Write-Die "Ollama API returned empty output. Output saved to: $outputLogPath"
 }
 
 if ($Agent -in @("builder", "fixer")) {
@@ -349,4 +392,5 @@ Write-Output "  - $writtenFile"
 } else {
 Write-Output $outputText
 }
+
 

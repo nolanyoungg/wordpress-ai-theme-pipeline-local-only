@@ -40,8 +40,15 @@ return 0
 Get-ChildItem -LiteralPath $ThemesDir -Directory -ErrorAction Stop |
 Where-Object { $_.Name -match '^nolan-young-showcase-theme-x(\d+)$' } |
 ForEach-Object {
+$stylePath = Join-Path $_.FullName "style.css"
+
+# Failed or interrupted runs can leave empty local folders behind.
+# Empty folders are not tracked by Git, but they can still exist on disk.
+# Only folders with a real style.css count as completed generated themes.
+if (Test-Path -LiteralPath $stylePath) {
 $v = [int]([regex]::Match($_.Name, '^nolan-young-showcase-theme-x(\d+)$').Groups[1].Value)
 if ($v -gt $max) { $max = $v }
+}
 }
 
 return $max
