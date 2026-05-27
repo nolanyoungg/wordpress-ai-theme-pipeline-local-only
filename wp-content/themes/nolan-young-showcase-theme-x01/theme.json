@@ -1,0 +1,602 @@
+﻿
+
+
+
+
+
+
+
+{
+
+
+
+
+
+
+
+
+  "version": 1,
+
+
+
+
+
+
+
+
+  "settings": {
+
+
+
+
+
+
+
+
+    "color": {
+
+
+
+
+
+
+
+
+      "palette": [
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "warm-white",
+
+
+
+
+
+
+
+
+          "color": "#fffaf3"
+
+
+
+
+
+
+
+
+        },
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "soft-ivory",
+
+
+
+
+
+
+
+
+          "color": "#f7f1e7"
+
+
+
+
+
+
+
+
+        },
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "clean-white",
+
+
+
+
+
+
+
+
+          "color": "#ffffff"
+
+
+
+
+
+
+
+
+        },
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "light-sand",
+
+
+
+
+
+
+
+
+          "color": "#eadfce"
+
+
+
+
+
+
+
+
+        },
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "warm-beige",
+
+
+
+
+
+
+
+
+          "color": "#d8c4a4"
+
+
+
+
+
+
+
+
+        },
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "champagne-gold",
+
+
+
+
+
+
+
+
+          "color": "#b99558"
+
+
+
+
+
+
+
+
+        },
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "soft-taupe",
+
+
+
+
+
+
+
+
+          "color": "#8f7a61"
+
+
+
+
+
+
+
+
+        },
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "muted-clay",
+
+
+
+
+
+
+
+
+          "color": "#b66f4f"
+
+
+
+
+
+
+
+
+        },
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "charcoal-text",
+
+
+
+
+
+
+
+
+          "color": "#1f1c18"
+
+
+
+
+
+
+
+
+        },
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "soft-black",
+
+
+
+
+
+
+
+
+          "color": "#11100d"
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+      ]
+
+
+
+
+
+
+
+
+    },
+
+
+
+
+
+
+
+
+    "typography": {
+
+
+
+
+
+
+
+
+      "fontFamily": [
+
+
+
+
+
+
+
+
+        {
+
+
+
+
+
+
+
+
+          "slug": "system-fonts",
+
+
+
+
+
+
+
+
+          "font-family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif"
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+      ]
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+  },
+
+
+
+
+
+
+
+
+  "styles": {
+
+
+
+
+
+
+
+
+    "color": {
+
+
+
+
+
+
+
+
+      "background": "#fffaf3",
+
+
+
+
+
+
+
+
+      "text": "#1f1c18"
+
+
+
+
+
+
+
+
+    },
+
+
+
+
+
+
+
+
+    "typography": {
+
+
+
+
+
+
+
+
+      "fontFamily": "system-fonts"
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
