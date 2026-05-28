@@ -236,6 +236,27 @@ Invoke-StaticFirstAgent `
 -AgentPromptPath "agents/01-architect-planner.md" `
 -AgentTask $commonTask
 
+$agent01RequiredPaths = @(".ai/theme-plan/theme-plan.md", ".ai/theme-plan/theme-plan.json")
+$agent01LatestOutput = Get-ChildItem -LiteralPath (Join-Path $root ".ai") -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "01-architect-planner-output-*.md" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+if ($agent01LatestOutput) {
+$agent01Text = Get-Content -LiteralPath $agent01LatestOutput.FullName -Raw
+foreach ($agent01RelativePath in $agent01RequiredPaths) {
+$agent01Destination = Join-Path $root $agent01RelativePath
+if (-not (Test-Path -LiteralPath $agent01Destination)) {
+$agent01EscapedPath = [regex]::Escape($agent01RelativePath)
+$agent01Pattern = "(?ms)^---FILE:\s*$agent01EscapedPath\s*(?:---)?\s*(?:\r?\n)(.*?)(?=^---END FILE---\s*$|^---FILE:|\z)"
+$agent01Match = [regex]::Match($agent01Text, $agent01Pattern)
+if ($agent01Match.Success) {
+$agent01Content = $agent01Match.Groups[1].Value.Trim("`r", "`n")
+$agent01Directory = Split-Path $agent01Destination -Parent
+New-Item -ItemType Directory -Force $agent01Directory | Out-Null
+Set-Content -LiteralPath $agent01Destination -Value $agent01Content -Encoding UTF8
+Write-Output "Recovered Agent 01 file block: $agent01RelativePath"
+}
+}
+}
+}
+
 Assert-FileExists -Path (Join-Path $root ".ai/theme-plan/theme-plan.md") -Label "Theme plan markdown"
 Assert-FileExists -Path (Join-Path $root ".ai/theme-plan/theme-plan.json") -Label "Theme plan JSON"
 
