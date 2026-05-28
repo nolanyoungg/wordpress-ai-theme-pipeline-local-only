@@ -455,6 +455,10 @@ Ensure-PreviewStructure `
 Write-Output ""
 Write-Output "Running local validation..."
 & (Join-Path $PSScriptRoot "validate-themes.ps1") -ThemeSlug $THEME_SLUG
+
+Write-Output ""
+Write-Output "Running finished-theme quality validation..."
+& (Join-Path $PSScriptRoot "validate-finished-theme.ps1") -ThemeSlug $THEME_SLUG
 } catch {
 if (-not $keepFailed) {
 if (Test-Path -LiteralPath $createdThemeFull) {
@@ -491,6 +495,7 @@ Write-Output "  git add -f $THEME_DIR $PREVIEW_DIR $THEME_ZIP"
 Write-Output "  git add docs/index.html"
 Write-Output "  git commit -m `"Add $THEME_SLUG (Ollama grouped local-only)`""
 Write-Output "  git push"
+
 
 
 
