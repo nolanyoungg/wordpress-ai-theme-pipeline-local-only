@@ -249,7 +249,8 @@ function Write-FileBlocks([string]$RepoRoot, [string]$Text, [string]$ThemeSlug) 
 # ---FILE: path
 #
 # The model often omits the closing --- after the file path.
-# We still require a matching ---END FILE--- before writing anything.
+# We also allow a new ---FILE: marker to implicitly close the previous file block.
+# This protects multi-file outputs from local models that forget ---END FILE--- between files.
 
 $lines = $Text -split "(`r`n|`n|`r)"
 $inBlock = $false
@@ -257,50 +258,56 @@ $curPath = $null
 $buf = New-Object System.Collections.Generic.List[string]
 $written = New-Object System.Collections.Generic.List[string]
 
-for ($i = 0; $i -lt $lines.Length; $i++) {
-$line = $lines[$i]
-
-if (-not $inBlock) {
+foreach ($line in $lines) {
 if ($line -match '^---FILE:\s*(.+?)\s*(?:---)?\s*$') {
+if ($inBlock -and $curPath) {
+$dest = Join-Path $RepoRoot $curPath
+$dir = Split-Path $dest -Parent
+New-Item -ItemType Directory -Force $dir | Out-Null
+$content = ($buf.ToArray() -join "`n").TrimEnd([char[]]"`r`n")
+Set-Content -LiteralPath $dest -Value $content -Encoding UTF8
+$written.Add($curPath) | Out-Null
+$buf.Clear() | Out-Null
+}
+
 $curPath = Normalize-FileBlockPath -RelPath $Matches[1]
 Assert-AllowedRelativePath -RepoRoot $RepoRoot -RelPath $curPath -ThemeSlug $ThemeSlug
 $inBlock = $true
 $buf.Clear() | Out-Null
-}
-
 continue
 }
 
-if ($line.Trim() -eq '---END FILE---') {
-$rel = $curPath
-$dest = Join-Path $RepoRoot $rel
-$destDir = Split-Path -Parent $dest
-
-if ($destDir) {
-New-Item -ItemType Directory -Force $destDir | Out-Null
-}
-
-($buf -join "`n") | Set-Content -Encoding UTF8 -Path $dest
-$written.Add($rel) | Out-Null
-
-$inBlock = $false
-$curPath = $null
+if ($line -match '^---END FILE---\s*$') {
+if ($inBlock -and $curPath) {
+$dest = Join-Path $RepoRoot $curPath
+$dir = Split-Path $dest -Parent
+New-Item -ItemType Directory -Force $dir | Out-Null
+$content = ($buf.ToArray() -join "`n").TrimEnd([char[]]"`r`n")
+Set-Content -LiteralPath $dest -Value $content -Encoding UTF8
+$written.Add($curPath) | Out-Null
 $buf.Clear() | Out-Null
-continue
+$curPath = $null
+$inBlock = $false
 }
-
-$buf.Add($line) | Out-Null
+continue
 }
 
 if ($inBlock) {
-throw "Unterminated file block for path: $curPath"
+$buf.Add($line) | Out-Null
+}
 }
 
-if ($written.Count -eq 0) {
-throw "No valid file blocks found. Builder/Fixer must output at least one ---FILE: ... ---END FILE--- block."
+# Treat EOF as the end of the last open file block.
+if ($inBlock -and $curPath) {
+$dest = Join-Path $RepoRoot $curPath
+$dir = Split-Path $dest -Parent
+New-Item -ItemType Directory -Force $dir | Out-Null
+$content = ($buf.ToArray() -join "`n").TrimEnd([char[]]"`r`n")
+Set-Content -LiteralPath $dest -Value $content -Encoding UTF8
+$written.Add($curPath) | Out-Null
 }
 
-return $written
+return $written.ToArray()
 }
 
 # MAIN EXECUTION
@@ -475,6 +482,7 @@ Write-Output "  - $writtenFile"
 } else {
 Write-Output $outputText
 }
+
 
 
 
