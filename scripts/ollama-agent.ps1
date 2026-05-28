@@ -1,6 +1,5 @@
 ﻿param(
 	[Parameter(Mandatory = $true)]
-	[ValidateSet("planner", "builder", "reviewer", "fixer")]
 	[string]$Agent,
 
 	[Parameter(Mandatory = $true)]
@@ -34,7 +33,10 @@
 	[string]$LatestThemeDir = "",
 
 	[Parameter(Mandatory = $false)]
-	[string]$LatestPreviewDir = ""
+  [string]$LatestPreviewDir = "",
+
+  [Parameter(Mandatory = $false)]
+  [string]$AgentPromptPath = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -304,7 +306,15 @@ return $written
 # MAIN EXECUTION
 # Composes the agent prompt, runs Ollama, saves raw output, and writes file blocks.
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..") | Select-Object -ExpandProperty Path
-$agentPromptPath = Join-Path $repoRoot (Join-Path "agents" "$Agent-agent.md")
+if ([string]::IsNullOrWhiteSpace($AgentPromptPath)) {
+  $agentPromptPath = Join-Path $repoRoot (Join-Path "agents" "$Agent-agent.md")
+} else {
+  if ([System.IO.Path]::IsPathRooted($AgentPromptPath)) {
+    $agentPromptPath = $AgentPromptPath
+  } else {
+    $agentPromptPath = Join-Path $repoRoot $AgentPromptPath
+  }
+}
 $aiDir = Join-Path $repoRoot ".ai"
 
 New-Item -ItemType Directory -Force $aiDir | Out-Null
