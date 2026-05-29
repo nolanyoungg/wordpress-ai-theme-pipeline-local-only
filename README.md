@@ -388,3 +388,5 @@ The repo is moving toward this model:
 The repo should not ask the model to be disciplined and then hope for the best.
 
 The repo should reject undisciplined output automatically.
+
+this repo needs a lot of work
